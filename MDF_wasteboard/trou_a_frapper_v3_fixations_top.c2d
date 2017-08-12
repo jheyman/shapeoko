@@ -1,0 +1,238 @@
+{
+    "CIRCLE_OBJECTS": [
+        {
+            "group_id": [
+            ],
+            "id": "{78a0938e-084f-49ba-9a3c-320935181fb8}",
+            "position": [
+                50,
+                50
+            ],
+            "radius": 10
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{745922e1-d167-48a3-8558-0ab4c5764935}",
+            "position": [
+                350,
+                50
+            ],
+            "radius": 10
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{0c124b5a-ed89-47a4-b7e0-9c4d27b84b44}",
+            "position": [
+                350,
+                300
+            ],
+            "radius": 10
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{bef26d34-5acc-40ea-b5b9-937051dc8918}",
+            "position": [
+                50,
+                50
+            ],
+            "radius": 3.5
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{00c6dd5a-b2ad-4648-be92-f6cb1cbf8f77}",
+            "position": [
+                350,
+                50
+            ],
+            "radius": 3.5
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{4bb53775-1928-4c07-8557-8c0458b2a39a}",
+            "position": [
+                350,
+                300
+            ],
+            "radius": 3.5
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{409b280d-7c57-456e-9772-663a533649c5}",
+            "position": [
+                50,
+                300
+            ],
+            "radius": 3.5
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{8cd73063-7ff9-4bfa-b8bd-54ae1ba01250}",
+            "position": [
+                49.538149815670586,
+                300
+            ],
+            "radius": 10
+        }
+    ],
+    "CURVE_OBJECTS": [
+    ],
+    "DOCUMENT_VALUES": {
+        "BACKGROUND_IMAGE": "AAAAAA==",
+        "BACKGROUND_OPACITY": 0.5,
+        "BACKGROUND_POSITION_X": 0,
+        "BACKGROUND_POSITION_Y": 0,
+        "BACKGROUND_ROTATION": 0,
+        "BACKGROUND_SCALE": 1,
+        "BACKGROUND_VISIBLE": false,
+        "DISPLAYMM": true,
+        "HEIGHT": 350,
+        "MACHINE": "Shapeoko 3",
+        "MATERIAL": "MDF",
+        "RETRACT": 5,
+        "THICKNESS": 15,
+        "WIDTH": 400,
+        "ZERO_X": 0,
+        "ZERO_Y": 0,
+        "ZERO_Z": 0,
+        "grid_enabled": true,
+        "grid_spacing": 5,
+        "version": 1
+    },
+    "RECT_OBJECTS": [
+    ],
+    "REGULAR_POLYGON_OBJECTS": [
+    ],
+    "TEXT_OBJECTS": [
+    ],
+    "TOOLPATH_OBJECTS": [
+        {
+            "automatic_parameters": true,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{bef26d34-5acc-40ea-b5b9-937051dc8918}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{00c6dd5a-b2ad-4648-be92-f6cb1cbf8f77}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{4bb53775-1928-4c07-8557-8c0458b2a39a}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{409b280d-7c57-456e-9772-663a533649c5}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -15.4,
+            "name": "through holes",
+            "ofset_dir": -1,
+            "speeds": {
+                "feedrate": 645.1599999999875,
+                "plungerate": 322.57999999999373,
+                "rpm": 15000
+            },
+            "start_depth": 0,
+            "stepdown": 1.2105636007416867,
+            "stepover": 1.42875,
+            "tab_height": 5,
+            "tab_width": 8,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 3.175,
+                "display_mm": true,
+                "flutes": 1,
+                "length": 20,
+                "name": "1FLUTE 3.175",
+                "number": 9,
+                "overall_length": 0,
+                "uuid": "{7b51c125-1869-425f-bb0c-bf5b325dd308}"
+            },
+            "uuid": "{dc57d511-8e3d-407d-a532-330030f6c9ec}"
+        },
+        {
+            "automatic_parameters": true,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{8cd73063-7ff9-4bfa-b8bd-54ae1ba01250}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{0c124b5a-ed89-47a4-b7e0-9c4d27b84b44}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{745922e1-d167-48a3-8558-0ab4c5764935}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{78a0938e-084f-49ba-9a3c-320935181fb8}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -7,
+            "name": "counterbores",
+            "ofset_dir": 2,
+            "speeds": {
+                "feedrate": 645.1599999999875,
+                "plungerate": 322.57999999999373,
+                "rpm": 15000
+            },
+            "start_depth": 0,
+            "stepdown": 1.2105636007416867,
+            "stepover": 1.42875,
+            "tab_height": 5,
+            "tab_width": 8,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 3.175,
+                "display_mm": true,
+                "flutes": 1,
+                "length": 20,
+                "name": "1FLUTE 3.175",
+                "number": 9,
+                "overall_length": 0,
+                "uuid": "{7b51c125-1869-425f-bb0c-bf5b325dd308}"
+            },
+            "uuid": "{2aecd1fd-19e2-4e42-a3b4-44df8353622b}"
+        }
+    ]
+}
