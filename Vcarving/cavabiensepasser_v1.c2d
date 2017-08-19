@@ -1,0 +1,115 @@
+{
+    "CIRCLE_OBJECTS": [
+    ],
+    "CURVE_OBJECTS": [
+    ],
+    "DOCUMENT_VALUES": {
+        "BACKGROUND_IMAGE": "AAAAAA==",
+        "BACKGROUND_OPACITY": 0.5,
+        "BACKGROUND_POSITION_X": 0,
+        "BACKGROUND_POSITION_Y": 0,
+        "BACKGROUND_ROTATION": 0,
+        "BACKGROUND_SCALE": 1,
+        "BACKGROUND_VISIBLE": false,
+        "DISPLAYMM": true,
+        "HEIGHT": 100,
+        "MACHINE": "Shapeoko 3",
+        "MATERIAL": "Soft",
+        "RETRACT": 10,
+        "THICKNESS": 18,
+        "WIDTH": 120,
+        "ZERO_X": 0,
+        "ZERO_Y": 0,
+        "ZERO_Z": 0,
+        "grid_enabled": true,
+        "grid_spacing": 5,
+        "version": 1
+    },
+    "RECT_OBJECTS": [
+    ],
+    "REGULAR_POLYGON_OBJECTS": [
+    ],
+    "TEXT_OBJECTS": [
+        {
+            "flip_horiz": false,
+            "flip_vert": false,
+            "font": "Tahoma-Regular",
+            "group_id": [
+            ],
+            "height": -1,
+            "id": "{ebffd2ae-fe45-47a2-a740-46f440d9642c}",
+            "position": [
+                0.8789249990390076,
+                5.230390673796737
+            ],
+            "rotation": 0,
+            "text": "ça va bien se passer !",
+            "width": 117.6774193548387
+        },
+        {
+            "flip_horiz": false,
+            "flip_vert": false,
+            "font": "Tahoma-Regular",
+            "group_id": [
+            ],
+            "height": -1,
+            "id": "{930c91b7-7e7b-4401-971c-2cd0499daab9}",
+            "position": [
+                18.832086788930447,
+                20.020113636363664
+            ],
+            "rotation": 0,
+            "text": "Détendez-vous,",
+            "width": 80.625
+        }
+    ],
+    "TOOLPATH_OBJECTS": [
+        {
+            "automatic_parameters": true,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{930c91b7-7e7b-4401-971c-2cd0499daab9}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{ebffd2ae-fe45-47a2-a740-46f440d9642c}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -10,
+            "name": "Toolpath 2",
+            "ofset_dir": 3,
+            "speeds": {
+                "feedrate": 278.196,
+                "plungerate": 139.098,
+                "rpm": 6468
+            },
+            "start_depth": 0,
+            "stepdown": 8.159,
+            "stepover": 6.75,
+            "tab_height": 5,
+            "tab_width": 8,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 30,
+                "corner_radius": 0,
+                "diameter": 15,
+                "display_mm": true,
+                "flutes": 2,
+                "length": 10,
+                "name": "V60",
+                "number": 16,
+                "overall_length": 0,
+                "uuid": "{4a75daac-fc46-44ab-af91-935edca14ee1}"
+            },
+            "uuid": "{b8400af0-b9b6-4e2a-9280-f92e976c7479}"
+        }
+    ]
+}

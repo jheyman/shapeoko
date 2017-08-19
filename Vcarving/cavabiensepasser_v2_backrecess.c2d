@@ -1,0 +1,111 @@
+{
+    "CIRCLE_OBJECTS": [
+    ],
+    "CURVE_OBJECTS": [
+    ],
+    "DOCUMENT_VALUES": {
+        "BACKGROUND_IMAGE": "AAAAAA==",
+        "BACKGROUND_OPACITY": 0.5,
+        "BACKGROUND_POSITION_X": 0,
+        "BACKGROUND_POSITION_Y": 0,
+        "BACKGROUND_ROTATION": 0,
+        "BACKGROUND_SCALE": 1,
+        "BACKGROUND_VISIBLE": false,
+        "DISPLAYMM": true,
+        "HEIGHT": 42.5,
+        "MACHINE": "Shapeoko 3",
+        "MATERIAL": "Soft",
+        "RETRACT": 10,
+        "THICKNESS": 9.296,
+        "WIDTH": 185,
+        "ZERO_X": 92.5,
+        "ZERO_Y": 21.25,
+        "ZERO_Z": 0,
+        "grid_enabled": true,
+        "grid_spacing": 5,
+        "version": 1
+    },
+    "RECT_OBJECTS": [
+        {
+            "corner_type": 0,
+            "group_id": [
+            ],
+            "height": 26,
+            "id": "{228d6cd9-c4eb-484f-8fca-bd0d4095e85b}",
+            "position": [
+                24.75,
+                21.25
+            ],
+            "radius": 15,
+            "rotation": 0,
+            "width": 9.5
+        },
+        {
+            "corner_type": 0,
+            "group_id": [
+            ],
+            "height": 26,
+            "id": "{f852670a-fc1e-4dc8-9c55-1518ca9a3df5}",
+            "position": [
+                160.446,
+                21.25
+            ],
+            "radius": 15,
+            "rotation": 0,
+            "width": 9.5
+        }
+    ],
+    "REGULAR_POLYGON_OBJECTS": [
+    ],
+    "TEXT_OBJECTS": [
+    ],
+    "TOOLPATH_OBJECTS": [
+        {
+            "automatic_parameters": false,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{228d6cd9-c4eb-484f-8fca-bd0d4095e85b}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{f852670a-fc1e-4dc8-9c55-1518ca9a3df5}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -2.5,
+            "name": "feet recesses",
+            "ofset_dir": -1,
+            "speeds": {
+                "feedrate": 1000,
+                "plungerate": 200,
+                "rpm": 12000
+            },
+            "start_depth": 0,
+            "stepdown": 3.518,
+            "stepover": 2.857,
+            "tab_height": 5,
+            "tab_width": 8,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 6.35,
+                "display_mm": false,
+                "flutes": 2,
+                "length": 9.524999999999999,
+                "name": "",
+                "number": 201,
+                "overall_length": 38.099999999999994,
+                "uuid": "{00000000-0000-0000-0000-000000000201}"
+            },
+            "uuid": "{73cd77fa-1552-4904-9c00-894d2cb28b92}"
+        }
+    ]
+}
