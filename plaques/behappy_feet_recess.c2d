@@ -1,0 +1,125 @@
+{
+    "CIRCLE_OBJECTS": [
+    ],
+    "CURVE_OBJECTS": [
+    ],
+    "DOCUMENT_VALUES": {
+        "BACKGROUND_IMAGE": "AAAAAA==",
+        "BACKGROUND_OPACITY": 0.5,
+        "BACKGROUND_POSITION_X": 0,
+        "BACKGROUND_POSITION_Y": 0,
+        "BACKGROUND_ROTATION": 0,
+        "BACKGROUND_SCALE": 1,
+        "BACKGROUND_VISIBLE": false,
+        "DISPLAYMM": true,
+        "HEIGHT": 150,
+        "MACHINE": "Shapeoko 3",
+        "MATERIAL": "Hard",
+        "RETRACT": 2,
+        "THICKNESS": 10.35,
+        "WIDTH": 170,
+        "ZERO_X": 0,
+        "ZERO_Y": 0,
+        "ZERO_Z": 0,
+        "grid_enabled": true,
+        "grid_spacing": 5,
+        "version": 1
+    },
+    "RECT_OBJECTS": [
+        {
+            "corner_type": 0,
+            "group_id": [
+            ],
+            "height": 48,
+            "id": "{5399bb60-282f-40ac-b296-ce9aa7507497}",
+            "position": [
+                0,
+                0
+            ],
+            "radius": 15,
+            "rotation": 0,
+            "width": 149
+        },
+        {
+            "corner_type": 4,
+            "group_id": [
+            ],
+            "height": 15,
+            "id": "{a0ace2a3-b4a0-436e-a8ca-d283f785db22}",
+            "position": [
+                -53.5,
+                -12.5
+            ],
+            "radius": 2,
+            "rotation": 0,
+            "width": 10
+        },
+        {
+            "corner_type": 4,
+            "group_id": [
+            ],
+            "height": 15,
+            "id": "{c92a4af6-2a91-4242-85b2-1ffc4a1a063d}",
+            "position": [
+                48.5,
+                -12.5
+            ],
+            "radius": 2,
+            "rotation": 0,
+            "width": 10
+        }
+    ],
+    "REGULAR_POLYGON_OBJECTS": [
+    ],
+    "TEXT_OBJECTS": [
+    ],
+    "TOOLPATH_OBJECTS": [
+        {
+            "automatic_parameters": true,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{a0ace2a3-b4a0-436e-a8ca-d283f785db22}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{c92a4af6-2a91-4242-85b2-1ffc4a1a063d}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -1,
+            "name": "feet_recess_pockets",
+            "ofset_dir": 2,
+            "speeds": {
+                "feedrate": 457.19999999999925,
+                "plungerate": 228.59999999999962,
+                "rpm": 12500
+            },
+            "start_depth": 0,
+            "stepdown": 0.7040450113654253,
+            "stepover": 1.42875,
+            "tab_height": 5,
+            "tab_width": 8,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 3.175,
+                "display_mm": true,
+                "flutes": 1,
+                "length": 25.4,
+                "name": "1FLUTECHEAP",
+                "number": 18,
+                "overall_length": 0,
+                "uuid": "{abe02aa9-aa9d-4315-a51f-7f1d1a074d02}"
+            },
+            "uuid": "{e2fe49ea-0d2f-4597-9c28-813ae764b898}"
+        }
+    ]
+}

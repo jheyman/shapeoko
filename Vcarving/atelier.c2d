@@ -1,0 +1,169 @@
+{
+    "CIRCLE_OBJECTS": [
+    ],
+    "CURVE_OBJECTS": [
+    ],
+    "DOCUMENT_VALUES": {
+        "BACKGROUND_IMAGE": "AAAAAA==",
+        "BACKGROUND_OPACITY": 0.5,
+        "BACKGROUND_POSITION_X": 0,
+        "BACKGROUND_POSITION_Y": 0,
+        "BACKGROUND_ROTATION": 0,
+        "BACKGROUND_SCALE": 1,
+        "BACKGROUND_VISIBLE": false,
+        "DISPLAYMM": true,
+        "HEIGHT": 150,
+        "MACHINE": "Shapeoko 3",
+        "MATERIAL": "Hard",
+        "RETRACT": 2,
+        "THICKNESS": 10.4,
+        "WIDTH": 170,
+        "ZERO_X": 0,
+        "ZERO_Y": 0,
+        "ZERO_Z": 0,
+        "grid_enabled": true,
+        "grid_spacing": 5,
+        "version": 1
+    },
+    "RECT_OBJECTS": [
+        {
+            "corner_type": 1,
+            "group_id": [
+            ],
+            "height": 50,
+            "id": "{52508aaa-c4e7-4dc4-9a54-252d647c4131}",
+            "position": [
+                84.7438542566482,
+                30.082528074239093
+            ],
+            "radius": 10,
+            "rotation": 0,
+            "width": 150
+        },
+        {
+            "corner_type": 1,
+            "group_id": [
+            ],
+            "height": 56,
+            "id": "{f5c6035d-b40b-481d-bacd-483a64be8e87}",
+            "position": [
+                84.744,
+                30.083
+            ],
+            "radius": 12.3,
+            "rotation": 0,
+            "width": 156
+        }
+    ],
+    "REGULAR_POLYGON_OBJECTS": [
+    ],
+    "TEXT_OBJECTS": [
+        {
+            "flip_horiz": false,
+            "flip_vert": false,
+            "font": "Adobe Devanagari-Bold",
+            "group_id": [
+            ],
+            "height": -1,
+            "id": "{963a4873-5745-4a70-bef4-fcd811af17fe}",
+            "position": [
+                18.220070737350625,
+                15.020128157078073
+            ],
+            "rotation": 0,
+            "text": "Atelier",
+            "width": 127.45588235294119
+        }
+    ],
+    "TOOLPATH_OBJECTS": [
+        {
+            "automatic_parameters": false,
+            "elements": [
+            ],
+            "enabled": false,
+            "end_depth": -2,
+            "name": "poche",
+            "ofset_dir": 2,
+            "speeds": {
+                "feedrate": 457.2,
+                "plungerate": 50,
+                "rpm": 12500
+            },
+            "start_depth": 0,
+            "stepdown": 0.704,
+            "stepover": 1.429,
+            "tab_height": 5,
+            "tab_width": 8,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 3.175,
+                "display_mm": true,
+                "flutes": 1,
+                "length": 25.4,
+                "name": "1FLUTECHEAP",
+                "number": 18,
+                "overall_length": 0,
+                "uuid": "{abe02aa9-aa9d-4315-a51f-7f1d1a074d02}"
+            },
+            "uuid": "{ede87493-28f9-484c-87ce-12c07aac0572}"
+        },
+        {
+            "automatic_parameters": false,
+            "elements": [
+                {
+                    "tab_index": [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "tab_u": [
+                        0.03960504608841976,
+                        0.786548316660285,
+                        0.2754084666449425,
+                        0.5507448961037622,
+                        0.4132826990996807,
+                        0.9128706636490241,
+                        0.1637121095392212,
+                        0.6624412532094837
+                    ],
+                    "uuid": "{f5c6035d-b40b-481d-bacd-483a64be8e87}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -10.4,
+            "name": "decoupe",
+            "ofset_dir": 1,
+            "speeds": {
+                "feedrate": 1905,
+                "plungerate": 476.25,
+                "rpm": 11811
+            },
+            "start_depth": 0,
+            "stepdown": 1,
+            "stepover": 2.7,
+            "tab_height": 3,
+            "tab_width": 5,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 6,
+                "display_mm": true,
+                "flutes": 2,
+                "length": 10,
+                "name": "Square6mm",
+                "number": 14,
+                "overall_length": 0,
+                "uuid": "{345d5563-66e8-42cf-9780-d53073bb5110}"
+            },
+            "uuid": "{1957e940-a280-44a7-a33e-d7912b971421}"
+        }
+    ]
+}
