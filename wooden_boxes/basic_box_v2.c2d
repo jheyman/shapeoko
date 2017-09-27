@@ -1,0 +1,280 @@
+{
+    "CIRCLE_OBJECTS": [
+    ],
+    "CURVE_OBJECTS": [
+    ],
+    "DOCUMENT_VALUES": {
+        "BACKGROUND_IMAGE": "AAAAAA==",
+        "BACKGROUND_OPACITY": 0.5,
+        "BACKGROUND_POSITION_X": 0,
+        "BACKGROUND_POSITION_Y": 0,
+        "BACKGROUND_ROTATION": 0,
+        "BACKGROUND_SCALE": 1,
+        "BACKGROUND_VISIBLE": false,
+        "DISPLAYMM": true,
+        "HEIGHT": 180,
+        "MACHINE": "Shapeoko 3",
+        "MATERIAL": "Hard",
+        "RETRACT": 3,
+        "THICKNESS": 19.3,
+        "WIDTH": 250,
+        "ZERO_X": 125,
+        "ZERO_Y": 90,
+        "ZERO_Z": 0,
+        "grid_enabled": true,
+        "grid_spacing": 5,
+        "version": 1
+    },
+    "RECT_OBJECTS": [
+        {
+            "corner_type": 1,
+            "group_id": [
+            ],
+            "height": 150,
+            "id": "{8924a313-2472-4679-9340-a1d90a811cd5}",
+            "position": [
+                70,
+                90
+            ],
+            "radius": 15,
+            "rotation": 0,
+            "width": 100
+        },
+        {
+            "corner_type": 1,
+            "group_id": [
+            ],
+            "height": 140,
+            "id": "{cc48fb97-f414-47d5-a352-eb69f6f42bb9}",
+            "position": [
+                69.70617260691772,
+                90
+            ],
+            "radius": 10,
+            "rotation": 0,
+            "width": 90
+        },
+        {
+            "corner_type": 1,
+            "group_id": [
+            ],
+            "height": 150,
+            "id": "{1e5c2bf4-05de-4cf3-bfb1-439751a5fd39}",
+            "position": [
+                180,
+                90
+            ],
+            "radius": 15,
+            "rotation": 0,
+            "width": 100
+        },
+        {
+            "corner_type": 1,
+            "group_id": [
+            ],
+            "height": 140,
+            "id": "{1860d380-b1b0-49c7-a5a3-3ffa9d1329b6}",
+            "position": [
+                180,
+                90
+            ],
+            "radius": 10,
+            "rotation": 0,
+            "width": 90
+        },
+        {
+            "corner_type": 1,
+            "group_id": [
+            ],
+            "height": 130,
+            "id": "{feb8f2c1-2cac-4a44-aa8b-962cdd07a24a}",
+            "position": [
+                180,
+                90
+            ],
+            "radius": 5,
+            "rotation": 0,
+            "width": 80
+        }
+    ],
+    "REGULAR_POLYGON_OBJECTS": [
+    ],
+    "TEXT_OBJECTS": [
+    ],
+    "TOOLPATH_OBJECTS": [
+        {
+            "automatic_parameters": false,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{cc48fb97-f414-47d5-a352-eb69f6f42bb9}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{feb8f2c1-2cac-4a44-aa8b-962cdd07a24a}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -15,
+            "name": "inner_pockets",
+            "ofset_dir": 2,
+            "speeds": {
+                "feedrate": 1524,
+                "plungerate": 317.5,
+                "rpm": 15000
+            },
+            "start_depth": 0,
+            "stepdown": 2.345,
+            "stepover": 2.857,
+            "tab_height": 5,
+            "tab_width": 8,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 6.35,
+                "display_mm": false,
+                "flutes": 3,
+                "length": 9.524999999999999,
+                "name": "",
+                "number": 201,
+                "overall_length": 38.099999999999994,
+                "uuid": "{00000000-0000-0000-0000-000000000201}"
+            },
+            "uuid": "{5ac13684-2282-4de8-9680-296738e9e2a9}"
+        },
+        {
+            "automatic_parameters": false,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{1860d380-b1b0-49c7-a5a3-3ffa9d1329b6}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -3,
+            "name": "bottom_part_internal_contact",
+            "ofset_dir": 1,
+            "speeds": {
+                "feedrate": 1524,
+                "plungerate": 317.5,
+                "rpm": 15000
+            },
+            "start_depth": 0,
+            "stepdown": 2.345,
+            "stepover": 2.857,
+            "tab_height": 5,
+            "tab_width": 8,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 6.35,
+                "display_mm": false,
+                "flutes": 3,
+                "length": 9.524999999999999,
+                "name": "",
+                "number": 201,
+                "overall_length": 38.099999999999994,
+                "uuid": "{00000000-0000-0000-0000-000000000201}"
+            },
+            "uuid": "{b22f532b-ec65-4237-8528-5d1226f3dc01}"
+        },
+        {
+            "automatic_parameters": false,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{cc48fb97-f414-47d5-a352-eb69f6f42bb9}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -3,
+            "name": "cover_adjust_height",
+            "ofset_dir": 1,
+            "speeds": {
+                "feedrate": 1524,
+                "plungerate": 317.5,
+                "rpm": 15000
+            },
+            "start_depth": 0,
+            "stepdown": 2.345,
+            "stepover": 2.857,
+            "tab_height": 5,
+            "tab_width": 8,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 6.35,
+                "display_mm": false,
+                "flutes": 3,
+                "length": 9.524999999999999,
+                "name": "",
+                "number": 201,
+                "overall_length": 38.099999999999994,
+                "uuid": "{00000000-0000-0000-0000-000000000201}"
+            },
+            "uuid": "{72bb6822-782f-4cde-8fad-3b409c52d2e4}"
+        },
+        {
+            "automatic_parameters": false,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{8924a313-2472-4679-9340-a1d90a811cd5}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{1e5c2bf4-05de-4cf3-bfb1-439751a5fd39}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -19.35,
+            "name": "cutout",
+            "ofset_dir": 1,
+            "speeds": {
+                "feedrate": 1524,
+                "plungerate": 317.5,
+                "rpm": 15000
+            },
+            "start_depth": 0,
+            "stepdown": 2.345,
+            "stepover": 2.857,
+            "tab_height": 5,
+            "tab_width": 8,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 6.35,
+                "display_mm": false,
+                "flutes": 3,
+                "length": 9.524999999999999,
+                "name": "",
+                "number": 201,
+                "overall_length": 38.099999999999994,
+                "uuid": "{00000000-0000-0000-0000-000000000201}"
+            },
+            "uuid": "{83a2f344-7e02-46ce-99eb-c9644a48f532}"
+        }
+    ]
+}
