@@ -1,9 +1,13 @@
 {
-    "CIRCLE_OBJECTS": [
-    ],
     "CURVE_OBJECTS": [
         {
-            "control_point_1": [
+            "behavior": 0,
+            "corner_type": 0,
+            "cp1": [
+                [
+                    272.5,
+                    15.017
+                ],
                 [
                     272.5,
                     15.017
@@ -41,7 +45,7 @@
                     15.017
                 ]
             ],
-            "control_point_2": [
+            "cp2": [
                 [
                     272.5,
                     15.017
@@ -72,6 +76,10 @@
                 ],
                 [
                     252.5,
+                    15.017
+                ],
+                [
+                    272.5,
                     15.017
                 ],
                 [
@@ -81,16 +89,19 @@
             ],
             "group_id": [
             ],
+            "height": 0,
             "id": "{91d30559-da23-43ad-bab9-1877a127c578}",
+            "num_sides": 6,
             "point_type": [
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                0,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
                 4
             ],
             "points": [
@@ -124,6 +135,10 @@
                 ],
                 [
                     252.5,
+                    15.017
+                ],
+                [
+                    272.5,
                     15.017
                 ],
                 [
@@ -135,10 +150,30 @@
                 -242.5,
                 -5.0169999999999995
             ],
-            "rotation": 0
+            "radius": 0,
+            "rotation": 0,
+            "smooth": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "width": 0
         },
         {
-            "control_point_1": [
+            "behavior": 0,
+            "corner_type": 0,
+            "cp1": [
+                [
+                    272.5,
+                    15.017
+                ],
                 [
                     272.5,
                     15.017
@@ -176,7 +211,7 @@
                     15.017
                 ]
             ],
-            "control_point_2": [
+            "cp2": [
                 [
                     272.5,
                     15.017
@@ -207,6 +242,10 @@
                 ],
                 [
                     252.5,
+                    15.017
+                ],
+                [
+                    272.5,
                     15.017
                 ],
                 [
@@ -216,16 +255,19 @@
             ],
             "group_id": [
             ],
+            "height": 0,
             "id": "{1cacafb8-7733-4bf9-b419-94db0e3cdbaa}",
+            "num_sides": 6,
             "point_type": [
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                0,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
                 4
             ],
             "points": [
@@ -264,13 +306,31 @@
                 [
                     272.5,
                     15.017
+                ],
+                [
+                    272.5,
+                    15.017
                 ]
             ],
             "position": [
                 -200,
                 -5.033999999999999
             ],
-            "rotation": 0
+            "radius": 0,
+            "rotation": 0,
+            "smooth": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "width": 0
         }
     ],
     "DOCUMENT_VALUES": {
@@ -282,84 +342,73 @@
         "BACKGROUND_SCALE": 1,
         "BACKGROUND_VISIBLE": false,
         "DISPLAYMM": true,
-        "HEIGHT": 100,
+        "HEIGHT": 50,
         "MACHINE": "Shapeoko 3",
-        "MATERIAL": "Hard",
-        "RETRACT": 10,
-        "THICKNESS": 9.296,
-        "WIDTH": 350.012,
+        "MATERIAL": "Soft",
+        "RETRACT": 3,
+        "THICKNESS": 9.35,
+        "WIDTH": 100,
         "ZERO_X": 0,
         "ZERO_Y": 0,
         "ZERO_Z": 0,
+        "build_num": 433,
         "grid_enabled": true,
         "grid_spacing": 5,
+        "minimum_build_num": 420,
         "version": 1
     },
-    "RECT_OBJECTS": [
-    ],
-    "REGULAR_POLYGON_OBJECTS": [
-    ],
+    "REQUIRES_PRO": false,
     "TEXT_OBJECTS": [
     ],
-    "TOOLPATH_OBJECTS": [
+    "TOOLPATH_GROUP_OBJECTS": [
         {
-            "automatic_parameters": false,
-            "elements": [
+            "TOOLPATH_OBJECTS": [
                 {
-                    "tab_index": [
-                        0,
-                        0,
-                        0
+                    "automatic_parameters": false,
+                    "elements": [
                     ],
-                    "tab_u": [
-                        0.5857517691643269,
-                        0.27085057814043245,
-                        0.9166448418754403
-                    ],
-                    "uuid": "{91d30559-da23-43ad-bab9-1877a127c578}"
-                },
-                {
-                    "tab_index": [
-                        0,
-                        0,
-                        0
-                    ],
-                    "tab_u": [
-                        0.8888597891672536,
-                        0.5997676566318442,
-                        0.2849064351556961
-                    ],
-                    "uuid": "{1cacafb8-7733-4bf9-b419-94db0e3cdbaa}"
+                    "enabled": true,
+                    "end_depth": -9.4,
+                    "name": "cutout_feets",
+                    "ofset_dir": 1,
+                    "speeds": {
+                        "feedrate": 1500,
+                        "plungerate": 200,
+                        "rpm": 12500
+                    },
+                    "start_depth": 0,
+                    "stepdown": 2.345,
+                    "stepover": 2.857,
+                    "tab_height": 3,
+                    "tab_width": 5,
+                    "tolerance": 0.01,
+                    "tool": {
+                        "angle": 0,
+                        "corner_radius": 0,
+                        "diameter": 6.35,
+                        "display_mm": false,
+                        "flutes": 2,
+                        "length": 9.524999999999999,
+                        "name": "",
+                        "number": 201,
+                        "overall_length": 38.099999999999994,
+                        "uuid": "{00000000-0000-0000-0000-000000000201}"
+                    },
+                    "uuid": "{cc222e70-6bf3-4672-a4af-1051797c556b}"
                 }
             ],
             "enabled": true,
-            "end_depth": -9.296,
-            "name": "cutout_feets",
-            "ofset_dir": 1,
-            "speeds": {
-                "feedrate": 1500,
-                "plungerate": 200,
-                "rpm": 12500
-            },
-            "start_depth": 0,
-            "stepdown": 2.345,
-            "stepover": 2.857,
-            "tab_height": 3,
-            "tab_width": 5,
-            "tolerance": 0.01,
-            "tool": {
-                "angle": 0,
-                "corner_radius": 0,
-                "diameter": 6.35,
-                "display_mm": false,
-                "flutes": 2,
-                "length": 9.524999999999999,
-                "name": "",
-                "number": 201,
-                "overall_length": 38.099999999999994,
-                "uuid": "{00000000-0000-0000-0000-000000000201}"
-            },
-            "uuid": "{cc222e70-6bf3-4672-a4af-1051797c556b}"
+            "name": "Group 1",
+            "uuid": "{faeeae64-5456-42b5-9750-5e8ef1c92738}"
         }
     ]
 }
+
+
+
+
+MODELV1
+
+
+
+xE‡1  4 s$xaD2*¢[Ó­Ã7é-w×@Ä®ïùOÓÅÀïì ÿ…
