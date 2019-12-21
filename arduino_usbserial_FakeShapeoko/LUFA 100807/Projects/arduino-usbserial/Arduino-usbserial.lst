@@ -1,0 +1,2251 @@
+   1               		.file	"Arduino-usbserial.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.text.RingBuffer_Insert,"ax",@progbits
+  12               	RingBuffer_Insert:
+  13               	.LFB75:
+  14               		.file 1 "Lib/LightweightRingBuff.h"
+   1:Lib/LightweightRingBuff.h **** /*
+   2:Lib/LightweightRingBuff.h ****              LUFA Library
+   3:Lib/LightweightRingBuff.h ****      Copyright (C) Dean Camera, 2010.
+   4:Lib/LightweightRingBuff.h ****               
+   5:Lib/LightweightRingBuff.h ****   dean [at] fourwalledcubicle [dot] com
+   6:Lib/LightweightRingBuff.h ****       www.fourwalledcubicle.com
+   7:Lib/LightweightRingBuff.h **** */
+   8:Lib/LightweightRingBuff.h **** 
+   9:Lib/LightweightRingBuff.h **** /*
+  10:Lib/LightweightRingBuff.h ****   Copyright 2010  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Lib/LightweightRingBuff.h **** 
+  12:Lib/LightweightRingBuff.h ****   Permission to use, copy, modify, distribute, and sell this 
+  13:Lib/LightweightRingBuff.h ****   software and its documentation for any purpose is hereby granted
+  14:Lib/LightweightRingBuff.h ****   without fee, provided that the above copyright notice appear in 
+  15:Lib/LightweightRingBuff.h ****   all copies and that both that the copyright notice and this
+  16:Lib/LightweightRingBuff.h ****   permission notice and warranty disclaimer appear in supporting 
+  17:Lib/LightweightRingBuff.h ****   documentation, and that the name of the author not be used in 
+  18:Lib/LightweightRingBuff.h ****   advertising or publicity pertaining to distribution of the 
+  19:Lib/LightweightRingBuff.h ****   software without specific, written prior permission.
+  20:Lib/LightweightRingBuff.h **** 
+  21:Lib/LightweightRingBuff.h ****   The author disclaim all warranties with regard to this
+  22:Lib/LightweightRingBuff.h ****   software, including all implied warranties of merchantability
+  23:Lib/LightweightRingBuff.h ****   and fitness.  In no event shall the author be liable for any
+  24:Lib/LightweightRingBuff.h ****   special, indirect or consequential damages or any damages
+  25:Lib/LightweightRingBuff.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Lib/LightweightRingBuff.h ****   in an action of contract, negligence or other tortious action,
+  27:Lib/LightweightRingBuff.h ****   arising out of or in connection with the use or performance of
+  28:Lib/LightweightRingBuff.h ****   this software.
+  29:Lib/LightweightRingBuff.h **** */
+  30:Lib/LightweightRingBuff.h **** 
+  31:Lib/LightweightRingBuff.h **** /** \file
+  32:Lib/LightweightRingBuff.h ****  *
+  33:Lib/LightweightRingBuff.h ****  *  Ultra lightweight ring buffer, for fast insertion/deletion.
+  34:Lib/LightweightRingBuff.h ****  */
+  35:Lib/LightweightRingBuff.h ****  
+  36:Lib/LightweightRingBuff.h **** #ifndef _ULW_RING_BUFF_H_
+  37:Lib/LightweightRingBuff.h **** #define _ULW_RING_BUFF_H_
+  38:Lib/LightweightRingBuff.h **** 
+  39:Lib/LightweightRingBuff.h **** 	/* Includes: */
+  40:Lib/LightweightRingBuff.h **** 		#include <util/atomic.h>
+  41:Lib/LightweightRingBuff.h **** 	
+  42:Lib/LightweightRingBuff.h **** 		#include <stdint.h>
+  43:Lib/LightweightRingBuff.h **** 		#include <stdbool.h>
+  44:Lib/LightweightRingBuff.h **** 
+  45:Lib/LightweightRingBuff.h **** 	/* Defines: */
+  46:Lib/LightweightRingBuff.h **** 		/** Size of each ring buffer, in data elements - must be between 1 and 255. */
+  47:Lib/LightweightRingBuff.h **** 		#define BUFFER_SIZE         128
+  48:Lib/LightweightRingBuff.h **** 		
+  49:Lib/LightweightRingBuff.h **** 		/** Maximum number of data elements to buffer before forcing a flush. 
+  50:Lib/LightweightRingBuff.h **** 		 *  Must be less than BUFFER_SIZE
+  51:Lib/LightweightRingBuff.h **** 		 */
+  52:Lib/LightweightRingBuff.h **** 		#define BUFFER_NEARLY_FULL	96
+  53:Lib/LightweightRingBuff.h **** 		
+  54:Lib/LightweightRingBuff.h **** 		/** Type of data to store into the buffer. */
+  55:Lib/LightweightRingBuff.h **** 		#define RingBuff_Data_t     uint8_t
+  56:Lib/LightweightRingBuff.h **** 
+  57:Lib/LightweightRingBuff.h **** 		/** Datatype which may be used to store the count of data stored in a buffer, retrieved
+  58:Lib/LightweightRingBuff.h **** 		 *  via a call to \ref RingBuffer_GetCount().
+  59:Lib/LightweightRingBuff.h **** 		 */
+  60:Lib/LightweightRingBuff.h **** 		#if (BUFFER_SIZE <= 0xFF)
+  61:Lib/LightweightRingBuff.h **** 			#define RingBuff_Count_t   uint8_t
+  62:Lib/LightweightRingBuff.h **** 		#else
+  63:Lib/LightweightRingBuff.h **** 			#define RingBuff_Count_t   uint16_t
+  64:Lib/LightweightRingBuff.h **** 		#endif
+  65:Lib/LightweightRingBuff.h **** 
+  66:Lib/LightweightRingBuff.h **** 	/* Type Defines: */
+  67:Lib/LightweightRingBuff.h **** 		/** Type define for a new ring buffer object. Buffers should be initialized via a call to
+  68:Lib/LightweightRingBuff.h **** 		 *  \ref RingBuffer_InitBuffer() before use.
+  69:Lib/LightweightRingBuff.h **** 		 */
+  70:Lib/LightweightRingBuff.h **** 		typedef struct
+  71:Lib/LightweightRingBuff.h **** 		{
+  72:Lib/LightweightRingBuff.h **** 			RingBuff_Data_t  Buffer[BUFFER_SIZE]; /**< Internal ring buffer data, referenced by the buffer p
+  73:Lib/LightweightRingBuff.h **** 			RingBuff_Data_t* In; /**< Current storage location in the circular buffer */
+  74:Lib/LightweightRingBuff.h **** 			RingBuff_Data_t* Out; /**< Current retrieval location in the circular buffer */
+  75:Lib/LightweightRingBuff.h **** 			RingBuff_Count_t Count;
+  76:Lib/LightweightRingBuff.h **** 		} RingBuff_t;
+  77:Lib/LightweightRingBuff.h **** 	
+  78:Lib/LightweightRingBuff.h **** 	/* Inline Functions: */
+  79:Lib/LightweightRingBuff.h **** 		/** Initializes a ring buffer ready for use. Buffers must be initialized via this function
+  80:Lib/LightweightRingBuff.h **** 		 *  before any operations are called upon them. Already initialized buffers may be reset
+  81:Lib/LightweightRingBuff.h **** 		 *  by re-initializing them using this function.
+  82:Lib/LightweightRingBuff.h **** 		 *
+  83:Lib/LightweightRingBuff.h **** 		 *  \param[out] Buffer  Pointer to a ring buffer structure to initialize
+  84:Lib/LightweightRingBuff.h **** 		 */
+  85:Lib/LightweightRingBuff.h **** 		static inline void RingBuffer_InitBuffer(RingBuff_t* const Buffer)
+  86:Lib/LightweightRingBuff.h **** 		{
+  87:Lib/LightweightRingBuff.h **** 			ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  88:Lib/LightweightRingBuff.h **** 			{
+  89:Lib/LightweightRingBuff.h **** 				Buffer->In  = Buffer->Buffer;
+  90:Lib/LightweightRingBuff.h **** 				Buffer->Out = Buffer->Buffer;
+  91:Lib/LightweightRingBuff.h **** 			}
+  92:Lib/LightweightRingBuff.h **** 		}
+  93:Lib/LightweightRingBuff.h **** 		
+  94:Lib/LightweightRingBuff.h **** 		/** Retrieves the minimum number of bytes stored in a particular buffer. This value is computed
+  95:Lib/LightweightRingBuff.h **** 		 *  by entering an atomic lock on the buffer while the IN and OUT locations are fetched, so that
+  96:Lib/LightweightRingBuff.h **** 		 *  the buffer cannot be modified while the computation takes place. This value should be cached
+  97:Lib/LightweightRingBuff.h **** 		 *  when reading out the contents of the buffer, so that as small a time as possible is spent
+  98:Lib/LightweightRingBuff.h **** 		 *  in an atomic lock.
+  99:Lib/LightweightRingBuff.h **** 		 *
+ 100:Lib/LightweightRingBuff.h **** 		 *  \note The value returned by this function is guaranteed to only be the minimum number of byte
+ 101:Lib/LightweightRingBuff.h **** 		 *        stored in the given buffer; this value may change as other threads write new data and s
+ 102:Lib/LightweightRingBuff.h **** 		 *        the returned number should be used only to determine how many successive reads may safe
+ 103:Lib/LightweightRingBuff.h **** 		 *        be performed on the buffer.
+ 104:Lib/LightweightRingBuff.h **** 		 *
+ 105:Lib/LightweightRingBuff.h **** 		 *  \param[in] Buffer  Pointer to a ring buffer structure whose count is to be computed
+ 106:Lib/LightweightRingBuff.h **** 		 */
+ 107:Lib/LightweightRingBuff.h **** 		static inline RingBuff_Count_t RingBuffer_GetCount(RingBuff_t* const Buffer)
+ 108:Lib/LightweightRingBuff.h **** 		{
+ 109:Lib/LightweightRingBuff.h **** 			RingBuff_Count_t Count;
+ 110:Lib/LightweightRingBuff.h **** 			
+ 111:Lib/LightweightRingBuff.h **** 			ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+ 112:Lib/LightweightRingBuff.h **** 			{
+ 113:Lib/LightweightRingBuff.h **** 				Count = Buffer->Count;
+ 114:Lib/LightweightRingBuff.h **** 			}
+ 115:Lib/LightweightRingBuff.h **** 			
+ 116:Lib/LightweightRingBuff.h **** 			return Count;
+ 117:Lib/LightweightRingBuff.h **** 		}
+ 118:Lib/LightweightRingBuff.h **** 		
+ 119:Lib/LightweightRingBuff.h **** 		/** Atomically determines if the specified ring buffer contains any free space. This should
+ 120:Lib/LightweightRingBuff.h **** 		 *  be tested before storing data to the buffer, to ensure that no data is lost due to a
+ 121:Lib/LightweightRingBuff.h **** 		 *  buffer overrun.
+ 122:Lib/LightweightRingBuff.h **** 		 *
+ 123:Lib/LightweightRingBuff.h **** 		 *  \param[in,out] Buffer  Pointer to a ring buffer structure to insert into
+ 124:Lib/LightweightRingBuff.h **** 		 *
+ 125:Lib/LightweightRingBuff.h **** 		 *  \return Boolean true if the buffer contains no free space, false otherwise
+ 126:Lib/LightweightRingBuff.h **** 		 */		 
+ 127:Lib/LightweightRingBuff.h **** 		static inline bool RingBuffer_IsFull(RingBuff_t* const Buffer)
+ 128:Lib/LightweightRingBuff.h **** 		{
+ 129:Lib/LightweightRingBuff.h **** 			return (RingBuffer_GetCount(Buffer) == BUFFER_SIZE);
+ 130:Lib/LightweightRingBuff.h **** 		}
+ 131:Lib/LightweightRingBuff.h **** 
+ 132:Lib/LightweightRingBuff.h **** 		/** Atomically determines if the specified ring buffer contains any data. This should
+ 133:Lib/LightweightRingBuff.h **** 		 *  be tested before removing data from the buffer, to ensure that the buffer does not
+ 134:Lib/LightweightRingBuff.h **** 		 *  underflow.
+ 135:Lib/LightweightRingBuff.h **** 		 *
+ 136:Lib/LightweightRingBuff.h **** 		 *  If the data is to be removed in a loop, store the total number of bytes stored in the
+ 137:Lib/LightweightRingBuff.h **** 		 *  buffer (via a call to the \ref RingBuffer_GetCount() function) in a temporary variable
+ 138:Lib/LightweightRingBuff.h **** 		 *  to reduce the time spent in atomicity locks.
+ 139:Lib/LightweightRingBuff.h **** 		 *
+ 140:Lib/LightweightRingBuff.h **** 		 *  \param[in,out] Buffer  Pointer to a ring buffer structure to insert into
+ 141:Lib/LightweightRingBuff.h **** 		 *
+ 142:Lib/LightweightRingBuff.h **** 		 *  \return Boolean true if the buffer contains no free space, false otherwise
+ 143:Lib/LightweightRingBuff.h **** 		 */		 
+ 144:Lib/LightweightRingBuff.h **** 		static inline bool RingBuffer_IsEmpty(RingBuff_t* const Buffer)
+ 145:Lib/LightweightRingBuff.h **** 		{
+ 146:Lib/LightweightRingBuff.h **** 			return (RingBuffer_GetCount(Buffer) == 0);
+ 147:Lib/LightweightRingBuff.h **** 		}
+ 148:Lib/LightweightRingBuff.h **** 
+ 149:Lib/LightweightRingBuff.h **** 		/** Inserts an element into the ring buffer.
+ 150:Lib/LightweightRingBuff.h **** 		 *
+ 151:Lib/LightweightRingBuff.h **** 		 *  \note Only one execution thread (main program thread or an ISR) may insert into a single buff
+ 152:Lib/LightweightRingBuff.h **** 		 *        otherwise data corruption may occur. Insertion and removal may occur from different exe
+ 153:Lib/LightweightRingBuff.h **** 		 *        threads.
+ 154:Lib/LightweightRingBuff.h **** 		 *
+ 155:Lib/LightweightRingBuff.h **** 		 *  \param[in,out] Buffer  Pointer to a ring buffer structure to insert into
+ 156:Lib/LightweightRingBuff.h **** 		 *  \param[in]     Data    Data element to insert into the buffer
+ 157:Lib/LightweightRingBuff.h **** 		 */
+ 158:Lib/LightweightRingBuff.h **** 		static inline void RingBuffer_Insert(RingBuff_t* const Buffer,
+ 159:Lib/LightweightRingBuff.h **** 		                                     const RingBuff_Data_t Data)
+ 160:Lib/LightweightRingBuff.h **** 		{
+  15               		.loc 1 160 0
+  16               		.cfi_startproc
+  17               	.LVL0:
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+ 161:Lib/LightweightRingBuff.h **** 			*Buffer->In = Data;
+  22               		.loc 1 161 0
+  23 0000 FC01      		movw r30,r24
+  24 0002 E058      		subi r30,-128
+  25 0004 FF4F      		sbci r31,-1
+  26 0006 A081      		ld r26,Z
+  27 0008 B181      		ldd r27,Z+1
+  28 000a 6C93      		st X,r22
+ 162:Lib/LightweightRingBuff.h **** 			
+ 163:Lib/LightweightRingBuff.h **** 			if (++Buffer->In == &Buffer->Buffer[BUFFER_SIZE])
+  29               		.loc 1 163 0
+  30 000c A081      		ld r26,Z
+  31 000e B181      		ldd r27,Z+1
+  32 0010 9D01      		movw r18,r26
+  33 0012 2F5F      		subi r18,-1
+  34 0014 3F4F      		sbci r19,-1
+  35 0016 3183      		std Z+1,r19
+  36 0018 2083      		st Z,r18
+  37 001a 2E17      		cp r18,r30
+  38 001c 3F07      		cpc r19,r31
+  39 001e 01F4      		brne .L2
+ 164:Lib/LightweightRingBuff.h **** 			  Buffer->In = Buffer->Buffer;
+  40               		.loc 1 164 0
+  41 0020 1296      		adiw r26,1+1
+  42 0022 9C93      		st X,r25
+  43 0024 8E93      		st -X,r24
+  44 0026 1197      		sbiw r26,1
+  45               	.L2:
+  46               	.LBB34:
+ 165:Lib/LightweightRingBuff.h **** 
+ 166:Lib/LightweightRingBuff.h **** 			ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  47               		.loc 1 166 0
+  48 0028 2FB7      		in r18,__SREG__
+  49               	.LVL1:
+  50               	.LBB35:
+  51               	.LBB36:
+  52               		.file 2 "c:\\program files (x86)\\arduino\\hardware\\tools\\avr\\avr\\include\\util\\atomic.h"
+   1:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** /* Copyright (c) 2007 Dean Camera
+   2:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****    All rights reserved.
+   3:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+   4:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****    Redistribution and use in source and binary forms, with or without
+   5:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****    modification, are permitted provided that the following conditions are met:
+   6:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+   7:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****    * Redistributions of source code must retain the above copyright
+   8:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****      notice, this list of conditions and the following disclaimer.
+   9:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  10:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****    * Redistributions in binary form must reproduce the above copyright
+  11:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****      notice, this list of conditions and the following disclaimer in
+  12:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****      the documentation and/or other materials provided with the
+  13:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****      distribution.
+  14:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  15:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****    * Neither the name of the copyright holders nor the names of
+  16:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****      contributors may be used to endorse or promote products derived
+  17:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****      from this software without specific prior written permission.
+  18:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  19:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  20:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  21:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  22:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  23:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  24:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  25:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  26:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  27:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  28:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  29:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****   POSSIBILITY OF SUCH DAMAGE.
+  30:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** */
+  31:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  32:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** /* $Id$ */
+  33:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  34:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** #ifndef _UTIL_ATOMIC_H_
+  35:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** #define _UTIL_ATOMIC_H_ 1
+  36:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  37:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** #include <avr/io.h>
+  38:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** #include <avr/interrupt.h>
+  39:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  40:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** #if !defined(__DOXYGEN__)
+  41:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** /* Internal helper functions. */
+  42:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** static __inline__ uint8_t __iSeiRetVal(void)
+  43:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** {
+  44:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     sei();
+  45:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     return 1;
+  46:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** }
+  47:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  48:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** static __inline__ uint8_t __iCliRetVal(void)
+  49:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** {
+  50:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     cli();
+  53               		.loc 2 50 0
+  54               	/* #APP */
+  55               	 ;  50 "c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h" 1
+  56 002a F894      		cli
+  57               	 ;  0 "" 2
+  58               	.LVL2:
+  59               	/* #NOAPP */
+  60               	.LBE36:
+  61               	.LBE35:
+ 167:Lib/LightweightRingBuff.h **** 			{
+ 168:Lib/LightweightRingBuff.h **** 				Buffer->Count++;
+  62               		.loc 1 168 0
+  63 002c FC01      		movw r30,r24
+  64 002e EC57      		subi r30,124
+  65 0030 FF4F      		sbci r31,-1
+  66 0032 8081      		ld r24,Z
+  67               	.LVL3:
+  68 0034 8F5F      		subi r24,lo8(-(1))
+  69 0036 8083      		st Z,r24
+  70               	.LVL4:
+  71               	.LBB37:
+  72               	.LBB38:
+  51:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     return 1;
+  52:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** }
+  53:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  54:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** static __inline__ void __iSeiParam(const uint8_t *__s)
+  55:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** {
+  56:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     sei();
+  57:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     __asm__ volatile ("" ::: "memory");
+  58:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     (void)__s;
+  59:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** }
+  60:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  61:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** static __inline__ void __iCliParam(const uint8_t *__s)
+  62:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** {
+  63:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     cli();
+  64:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     __asm__ volatile ("" ::: "memory");
+  65:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     (void)__s;
+  66:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** }
+  67:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** 
+  68:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** static __inline__ void __iRestore(const  uint8_t *__s)
+  69:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h **** {
+  70:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     SREG = *__s;
+  73               		.loc 2 70 0
+  74 0038 2FBF      		out __SREG__,r18
+  71:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     __asm__ volatile ("" ::: "memory");
+  75               		.loc 2 71 0
+  76 003a 0895      		ret
+  77               	.LBE38:
+  78               	.LBE37:
+  79               	.LBE34:
+  80               		.cfi_endproc
+  81               	.LFE75:
+  83               		.section	.text.RingBuffer_Remove,"ax",@progbits
+  85               	RingBuffer_Remove:
+  86               	.LFB76:
+ 169:Lib/LightweightRingBuff.h **** 			}
+ 170:Lib/LightweightRingBuff.h **** 		}
+ 171:Lib/LightweightRingBuff.h **** 
+ 172:Lib/LightweightRingBuff.h **** 		/** Removes an element from the ring buffer.
+ 173:Lib/LightweightRingBuff.h **** 		 *
+ 174:Lib/LightweightRingBuff.h **** 		 *  \note Only one execution thread (main program thread or an ISR) may remove from a single buff
+ 175:Lib/LightweightRingBuff.h **** 		 *        otherwise data corruption may occur. Insertion and removal may occur from different exe
+ 176:Lib/LightweightRingBuff.h **** 		 *        threads.
+ 177:Lib/LightweightRingBuff.h **** 		 *
+ 178:Lib/LightweightRingBuff.h **** 		 *  \param[in,out] Buffer  Pointer to a ring buffer structure to retrieve from
+ 179:Lib/LightweightRingBuff.h **** 		 *
+ 180:Lib/LightweightRingBuff.h **** 		 *  \return Next data element stored in the buffer
+ 181:Lib/LightweightRingBuff.h **** 		 */
+ 182:Lib/LightweightRingBuff.h **** 		static inline RingBuff_Data_t RingBuffer_Remove(RingBuff_t* const Buffer)
+ 183:Lib/LightweightRingBuff.h **** 		{
+  87               		.loc 1 183 0
+  88               		.cfi_startproc
+  89               	.LVL5:
+  90               	/* prologue: function */
+  91               	/* frame size = 0 */
+  92               	/* stack size = 0 */
+  93               	.L__stack_usage = 0
+ 184:Lib/LightweightRingBuff.h **** 			RingBuff_Data_t Data = *Buffer->Out;
+  94               		.loc 1 184 0
+  95 0000 DC01      		movw r26,r24
+  96 0002 AE57      		subi r26,126
+  97 0004 BF4F      		sbci r27,-1
+  98 0006 ED91      		ld r30,X+
+  99 0008 FC91      		ld r31,X
+ 100 000a 1197      		sbiw r26,1
+ 101 000c 2191      		ld r18,Z+
+ 102               	.LVL6:
+ 185:Lib/LightweightRingBuff.h **** 			
+ 186:Lib/LightweightRingBuff.h **** 			if (++Buffer->Out == &Buffer->Buffer[BUFFER_SIZE])
+ 103               		.loc 1 186 0
+ 104 000e 1196      		adiw r26,1
+ 105 0010 FC93      		st X,r31
+ 106 0012 EE93      		st -X,r30
+ 107 0014 AC01      		movw r20,r24
+ 108 0016 4058      		subi r20,-128
+ 109 0018 5F4F      		sbci r21,-1
+ 110 001a E417      		cp r30,r20
+ 111 001c F507      		cpc r31,r21
+ 112 001e 01F4      		brne .L5
+ 187:Lib/LightweightRingBuff.h **** 			  Buffer->Out = Buffer->Buffer;
+ 113               		.loc 1 187 0
+ 114 0020 8D93      		st X+,r24
+ 115 0022 9C93      		st X,r25
+ 116               	.L5:
+ 117               	.LBB39:
+ 188:Lib/LightweightRingBuff.h **** 
+ 189:Lib/LightweightRingBuff.h **** 			ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+ 118               		.loc 1 189 0
+ 119 0024 3FB7      		in r19,__SREG__
+ 120               	.LVL7:
+ 121               	.LBB40:
+ 122               	.LBB41:
+  50:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     return 1;
+ 123               		.loc 2 50 0
+ 124               	/* #APP */
+ 125               	 ;  50 "c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h" 1
+ 126 0026 F894      		cli
+ 127               	 ;  0 "" 2
+ 128               	.LVL8:
+ 129               	/* #NOAPP */
+ 130               	.LBE41:
+ 131               	.LBE40:
+ 190:Lib/LightweightRingBuff.h **** 			{
+ 191:Lib/LightweightRingBuff.h **** 				Buffer->Count--;
+ 132               		.loc 1 191 0
+ 133 0028 FC01      		movw r30,r24
+ 134 002a EC57      		subi r30,124
+ 135 002c FF4F      		sbci r31,-1
+ 136 002e 9081      		ld r25,Z
+ 137 0030 9150      		subi r25,lo8(-(-1))
+ 138 0032 9083      		st Z,r25
+ 139               	.LVL9:
+ 140               	.LBB42:
+ 141               	.LBB43:
+  70:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 142               		.loc 2 70 0
+ 143 0034 3FBF      		out __SREG__,r19
+ 144               		.loc 2 71 0
+ 145               	.LBE43:
+ 146               	.LBE42:
+ 147               	.LBE39:
+ 192:Lib/LightweightRingBuff.h **** 			}
+ 193:Lib/LightweightRingBuff.h **** 			
+ 194:Lib/LightweightRingBuff.h **** 			return Data;
+ 195:Lib/LightweightRingBuff.h **** 		}
+ 148               		.loc 1 195 0
+ 149 0036 822F      		mov r24,r18
+ 150               	.LVL10:
+ 151 0038 0895      		ret
+ 152               		.cfi_endproc
+ 153               	.LFE76:
+ 155               		.section	.text.SetupHardware,"ax",@progbits
+ 156               	.global	SetupHardware
+ 158               	SetupHardware:
+ 159               	.LFB90:
+ 160               		.file 3 "Arduino-usbserial.c"
+   1:Arduino-usbserial.c **** /*
+   2:Arduino-usbserial.c ****              LUFA Library
+   3:Arduino-usbserial.c ****      Copyright (C) Dean Camera, 2010.
+   4:Arduino-usbserial.c ****               
+   5:Arduino-usbserial.c ****   dean [at] fourwalledcubicle [dot] com
+   6:Arduino-usbserial.c ****       www.fourwalledcubicle.com
+   7:Arduino-usbserial.c **** */
+   8:Arduino-usbserial.c **** 
+   9:Arduino-usbserial.c **** /*
+  10:Arduino-usbserial.c ****   Copyright 2010  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:Arduino-usbserial.c **** 
+  12:Arduino-usbserial.c ****   Permission to use, copy, modify, distribute, and sell this 
+  13:Arduino-usbserial.c ****   software and its documentation for any purpose is hereby granted
+  14:Arduino-usbserial.c ****   without fee, provided that the above copyright notice appear in 
+  15:Arduino-usbserial.c ****   all copies and that both that the copyright notice and this
+  16:Arduino-usbserial.c ****   permission notice and warranty disclaimer appear in supporting 
+  17:Arduino-usbserial.c ****   documentation, and that the name of the author not be used in 
+  18:Arduino-usbserial.c ****   advertising or publicity pertaining to distribution of the 
+  19:Arduino-usbserial.c ****   software without specific, written prior permission.
+  20:Arduino-usbserial.c **** 
+  21:Arduino-usbserial.c ****   The author disclaim all warranties with regard to this
+  22:Arduino-usbserial.c ****   software, including all implied warranties of merchantability
+  23:Arduino-usbserial.c ****   and fitness.  In no event shall the author be liable for any
+  24:Arduino-usbserial.c ****   special, indirect or consequential damages or any damages
+  25:Arduino-usbserial.c ****   whatsoever resulting from loss of use, data or profits, whether
+  26:Arduino-usbserial.c ****   in an action of contract, negligence or other tortious action,
+  27:Arduino-usbserial.c ****   arising out of or in connection with the use or performance of
+  28:Arduino-usbserial.c ****   this software.
+  29:Arduino-usbserial.c **** */
+  30:Arduino-usbserial.c **** 
+  31:Arduino-usbserial.c **** /** \file
+  32:Arduino-usbserial.c ****  *
+  33:Arduino-usbserial.c ****  *  Main source file for the Arduino-usbserial project. This file contains the main tasks of
+  34:Arduino-usbserial.c ****  *  the project and is responsible for the initial application hardware configuration.
+  35:Arduino-usbserial.c ****  */
+  36:Arduino-usbserial.c **** 
+  37:Arduino-usbserial.c **** #include "Arduino-usbserial.h"
+  38:Arduino-usbserial.c **** 
+  39:Arduino-usbserial.c **** /** Circular buffer to hold data from the host before it is sent to the device via the serial port.
+  40:Arduino-usbserial.c **** RingBuff_t USBtoUSART_Buffer;
+  41:Arduino-usbserial.c **** 
+  42:Arduino-usbserial.c **** /** Circular buffer to hold data from the serial port before it is sent to the host. */
+  43:Arduino-usbserial.c **** RingBuff_t USARTtoUSB_Buffer;
+  44:Arduino-usbserial.c **** 
+  45:Arduino-usbserial.c **** /** Pulse generation counters to keep track of the number of milliseconds remaining for each pulse 
+  46:Arduino-usbserial.c **** volatile struct
+  47:Arduino-usbserial.c **** {
+  48:Arduino-usbserial.c **** 	uint8_t TxLEDPulse; /**< Milliseconds remaining for data Tx LED pulse */
+  49:Arduino-usbserial.c **** 	uint8_t RxLEDPulse; /**< Milliseconds remaining for data Rx LED pulse */
+  50:Arduino-usbserial.c **** 	uint8_t PingPongLEDPulse; /**< Milliseconds remaining for enumeration Tx/Rx ping-pong LED pulse */
+  51:Arduino-usbserial.c **** } PulseMSRemaining;
+  52:Arduino-usbserial.c **** 
+  53:Arduino-usbserial.c **** /** LUFA CDC Class driver interface configuration and state information. This structure is
+  54:Arduino-usbserial.c ****  *  passed to all CDC Class driver functions, so that multiple instances of the same class
+  55:Arduino-usbserial.c ****  *  within a device can be differentiated from one another.
+  56:Arduino-usbserial.c ****  */
+  57:Arduino-usbserial.c **** USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
+  58:Arduino-usbserial.c **** 	{
+  59:Arduino-usbserial.c **** 		.Config = 
+  60:Arduino-usbserial.c **** 			{
+  61:Arduino-usbserial.c **** 				.ControlInterfaceNumber         = 0,
+  62:Arduino-usbserial.c **** 
+  63:Arduino-usbserial.c **** 				.DataINEndpointNumber           = CDC_TX_EPNUM,
+  64:Arduino-usbserial.c **** 				.DataINEndpointSize             = CDC_TXRX_EPSIZE,
+  65:Arduino-usbserial.c **** 				.DataINEndpointDoubleBank       = false,
+  66:Arduino-usbserial.c **** 
+  67:Arduino-usbserial.c **** 				.DataOUTEndpointNumber          = CDC_RX_EPNUM,
+  68:Arduino-usbserial.c **** 				.DataOUTEndpointSize            = CDC_TXRX_EPSIZE,
+  69:Arduino-usbserial.c **** 				.DataOUTEndpointDoubleBank      = false,
+  70:Arduino-usbserial.c **** 
+  71:Arduino-usbserial.c **** 				.NotificationEndpointNumber     = CDC_NOTIFICATION_EPNUM,
+  72:Arduino-usbserial.c **** 				.NotificationEndpointSize       = CDC_NOTIFICATION_EPSIZE,
+  73:Arduino-usbserial.c **** 				.NotificationEndpointDoubleBank = false,
+  74:Arduino-usbserial.c **** 			},
+  75:Arduino-usbserial.c **** 	};
+  76:Arduino-usbserial.c **** 
+  77:Arduino-usbserial.c **** /** Main program entry point. This routine contains the overall program flow, including initial
+  78:Arduino-usbserial.c ****  *  setup of all components and the main program loop.
+  79:Arduino-usbserial.c ****  */
+  80:Arduino-usbserial.c **** int main(void)
+  81:Arduino-usbserial.c **** {
+  82:Arduino-usbserial.c **** 	SetupHardware();
+  83:Arduino-usbserial.c **** 	
+  84:Arduino-usbserial.c **** 	RingBuffer_InitBuffer(&USBtoUSART_Buffer);
+  85:Arduino-usbserial.c **** 	RingBuffer_InitBuffer(&USARTtoUSB_Buffer);
+  86:Arduino-usbserial.c **** 
+  87:Arduino-usbserial.c **** 	sei();
+  88:Arduino-usbserial.c **** 
+  89:Arduino-usbserial.c **** 	for (;;)
+  90:Arduino-usbserial.c **** 	{
+  91:Arduino-usbserial.c **** 		/* Only try to read in bytes from the CDC interface if the transmit buffer is not full */
+  92:Arduino-usbserial.c **** 		if (!(RingBuffer_IsFull(&USBtoUSART_Buffer)))
+  93:Arduino-usbserial.c **** 		{
+  94:Arduino-usbserial.c **** 			int16_t ReceivedByte = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
+  95:Arduino-usbserial.c **** 
+  96:Arduino-usbserial.c **** 			/* Read bytes from the USB OUT endpoint into the USART transmit buffer */
+  97:Arduino-usbserial.c **** 			if (!(ReceivedByte < 0))
+  98:Arduino-usbserial.c **** 			  RingBuffer_Insert(&USBtoUSART_Buffer, ReceivedByte);
+  99:Arduino-usbserial.c **** 		}
+ 100:Arduino-usbserial.c **** 		
+ 101:Arduino-usbserial.c **** 		/* Check if the UART receive buffer flush timer has expired or the buffer is nearly full */
+ 102:Arduino-usbserial.c **** 		RingBuff_Count_t BufferCount = RingBuffer_GetCount(&USARTtoUSB_Buffer);
+ 103:Arduino-usbserial.c **** 		if ((TIFR0 & (1 << TOV0)) || (BufferCount > BUFFER_NEARLY_FULL))
+ 104:Arduino-usbserial.c **** 		{
+ 105:Arduino-usbserial.c **** 			TIFR0 |= (1 << TOV0);
+ 106:Arduino-usbserial.c **** 
+ 107:Arduino-usbserial.c **** 			if (USARTtoUSB_Buffer.Count) {
+ 108:Arduino-usbserial.c **** 				LEDs_TurnOnLEDs(LEDMASK_TX);
+ 109:Arduino-usbserial.c **** 				PulseMSRemaining.TxLEDPulse = TX_RX_LED_PULSE_MS;
+ 110:Arduino-usbserial.c **** 			}
+ 111:Arduino-usbserial.c **** 
+ 112:Arduino-usbserial.c **** 			/* Read bytes from the USART receive buffer into the USB IN endpoint */
+ 113:Arduino-usbserial.c **** 			while (BufferCount--)
+ 114:Arduino-usbserial.c **** 			  CDC_Device_SendByte(&VirtualSerial_CDC_Interface, RingBuffer_Remove(&USARTtoUSB_Buffer));
+ 115:Arduino-usbserial.c **** 			  
+ 116:Arduino-usbserial.c **** 			/* Turn off TX LED(s) once the TX pulse period has elapsed */
+ 117:Arduino-usbserial.c **** 			if (PulseMSRemaining.TxLEDPulse && !(--PulseMSRemaining.TxLEDPulse))
+ 118:Arduino-usbserial.c **** 			  LEDs_TurnOffLEDs(LEDMASK_TX);
+ 119:Arduino-usbserial.c **** 
+ 120:Arduino-usbserial.c **** 			/* Turn off RX LED(s) once the RX pulse period has elapsed */
+ 121:Arduino-usbserial.c **** 			if (PulseMSRemaining.RxLEDPulse && !(--PulseMSRemaining.RxLEDPulse))
+ 122:Arduino-usbserial.c **** 			  LEDs_TurnOffLEDs(LEDMASK_RX);
+ 123:Arduino-usbserial.c **** 		}
+ 124:Arduino-usbserial.c **** 		
+ 125:Arduino-usbserial.c **** 		/* Load the next byte from the USART transmit buffer into the USART */
+ 126:Arduino-usbserial.c **** 		if (!(RingBuffer_IsEmpty(&USBtoUSART_Buffer))) {
+ 127:Arduino-usbserial.c **** 		  Serial_TxByte(RingBuffer_Remove(&USBtoUSART_Buffer));
+ 128:Arduino-usbserial.c **** 		  	
+ 129:Arduino-usbserial.c **** 		  	LEDs_TurnOnLEDs(LEDMASK_RX);
+ 130:Arduino-usbserial.c **** 			PulseMSRemaining.RxLEDPulse = TX_RX_LED_PULSE_MS;
+ 131:Arduino-usbserial.c **** 		}
+ 132:Arduino-usbserial.c **** 		
+ 133:Arduino-usbserial.c **** 		CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
+ 134:Arduino-usbserial.c **** 		USB_USBTask();
+ 135:Arduino-usbserial.c **** 	}
+ 136:Arduino-usbserial.c **** }
+ 137:Arduino-usbserial.c **** 
+ 138:Arduino-usbserial.c **** /** Configures the board hardware and chip peripherals for the demo's functionality. */
+ 139:Arduino-usbserial.c **** void SetupHardware(void)
+ 140:Arduino-usbserial.c **** {
+ 161               		.loc 3 140 0
+ 162               		.cfi_startproc
+ 163               	/* prologue: function */
+ 164               	/* frame size = 0 */
+ 165               	/* stack size = 0 */
+ 166               	.L__stack_usage = 0
+ 141:Arduino-usbserial.c **** 	/* Disable watchdog if enabled by bootloader/fuses */
+ 142:Arduino-usbserial.c **** 	MCUSR &= ~(1 << WDRF);
+ 167               		.loc 3 142 0
+ 168 0000 84B7      		in r24,0x34
+ 169 0002 877F      		andi r24,lo8(-9)
+ 170 0004 84BF      		out 0x34,r24
+ 171               	.LBB50:
+ 172               	.LBB51:
+ 173               		.file 4 "c:\\program files (x86)\\arduino\\hardware\\tools\\avr\\avr\\include\\avr\\wdt.h"
+   1:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** /* Copyright (c) 2002, 2004 Marek Michalkiewicz
+   2:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    Copyright (c) 2005, 2006, 2007 Eric B. Weddington
+   3:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    All rights reserved.
+   4:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+   5:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    Redistribution and use in source and binary forms, with or without
+   6:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    modification, are permitted provided that the following conditions are met:
+   7:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+   8:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    * Redistributions of source code must retain the above copyright
+   9:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****      notice, this list of conditions and the following disclaimer.
+  10:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  11:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****      notice, this list of conditions and the following disclaimer in
+  13:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****      the documentation and/or other materials provided with the
+  14:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****      distribution.
+  15:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  16:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    * Neither the name of the copyright holders nor the names of
+  17:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****      contributors may be used to endorse or promote products derived
+  18:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****      from this software without specific prior written permission.
+  19:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  20:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  32:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** /* $Id$ */
+  33:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  34:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** /*
+  35:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    avr/wdt.h - macros for AVR watchdog timer
+  36:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****  */
+  37:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  38:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #ifndef _AVR_WDT_H_
+  39:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #define _AVR_WDT_H_
+  40:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  41:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #include <avr/io.h>
+  42:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #include <stdint.h>
+  43:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  44:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** /** \file */
+  45:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** /** \defgroup avr_watchdog <avr/wdt.h>: Watchdog timer handling
+  46:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     \code #include <avr/wdt.h> \endcode
+  47:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  48:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     This header file declares the interface to some inline macros
+  49:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     handling the watchdog timer present in many AVR devices.  In order
+  50:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     to prevent the watchdog timer configuration from being
+  51:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     accidentally altered by a crashing application, a special timed
+  52:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     sequence is required in order to change it.  The macros within
+  53:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     this header file handle the required sequence automatically
+  54:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     before changing any value.  Interrupts will be disabled during
+  55:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     the manipulation.
+  56:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  57:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     \note Depending on the fuse configuration of the particular
+  58:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     device, further restrictions might apply, in particular it might
+  59:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     be disallowed to turn off the watchdog timer.
+  60:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  61:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     Note that for newer devices (ATmega88 and newer, effectively any
+  62:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     AVR that has the option to also generate interrupts), the watchdog
+  63:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     timer remains active even after a system reset (except a power-on
+  64:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     condition), using the fastest prescaler value (approximately 15
+  65:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     ms).  It is therefore required to turn off the watchdog early
+  66:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     during program startup, the datasheet recommends a sequence like
+  67:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     the following:
+  68:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  69:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     \code
+  70:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     #include <stdint.h>
+  71:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     #include <avr/wdt.h>
+  72:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  73:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
+  74:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  75:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     void get_mcusr(void) \
+  76:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       __attribute__((naked)) \
+  77:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       __attribute__((section(".init3")));
+  78:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     void get_mcusr(void)
+  79:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     {
+  80:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       mcusr_mirror = MCUSR;
+  81:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       MCUSR = 0;
+  82:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       wdt_disable();
+  83:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     }
+  84:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     \endcode
+  85:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  86:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     Saving the value of MCUSR in \c mcusr_mirror is only needed if the
+  87:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     application later wants to examine the reset source, but in particular, 
+  88:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     clearing the watchdog reset flag before disabling the
+  89:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     watchdog is required, according to the datasheet.
+  90:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** */
+  91:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  92:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** /**
+  93:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    \ingroup avr_watchdog
+  94:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    Reset the watchdog timer.  When the watchdog timer is enabled,
+  95:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    a call to this instruction is required before the timer expires,
+  96:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    otherwise a watchdog-initiated device reset will occur. 
+  97:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** */
+  98:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+  99:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #define wdt_reset() __asm__ __volatile__ ("wdr")
+ 100:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 101:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #ifndef __DOXYGEN__
+ 102:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 103:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #if defined(WDP3)
+ 104:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** # define _WD_PS3_MASK       _BV(WDP3)
+ 105:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #else
+ 106:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** # define _WD_PS3_MASK       0x00
+ 107:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #endif
+ 108:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 109:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #if defined(WDTCSR)
+ 110:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #  define _WD_CONTROL_REG     WDTCSR
+ 111:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #elif defined(WDTCR)
+ 112:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #  define _WD_CONTROL_REG     WDTCR
+ 113:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #else
+ 114:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #  define _WD_CONTROL_REG     WDT
+ 115:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #endif
+ 116:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 117:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #if defined(WDTOE)
+ 118:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #define _WD_CHANGE_BIT      WDTOE
+ 119:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #else
+ 120:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #define _WD_CHANGE_BIT      WDCE
+ 121:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #endif
+ 122:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 123:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #endif	/* !__DOXYGEN__ */
+ 124:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 125:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 126:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** /**
+ 127:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    \ingroup avr_watchdog
+ 128:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    Enable the watchdog timer, configuring it for expiry after
+ 129:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    \c timeout (which is a combination of the \c WDP0 through
+ 130:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    \c WDP2 bits to write into the \c WDTCR register; For those devices 
+ 131:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    that have a \c WDTCSR register, it uses the combination of the \c WDP0 
+ 132:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    through \c WDP3 bits).
+ 133:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 134:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    See also the symbolic constants \c WDTO_15MS et al.
+ 135:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** */
+ 136:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 137:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 138:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #if defined(__AVR_XMEGA__)
+ 139:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 140:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #if defined (WDT_CTRLA) && !defined(RAMPD)
+ 141:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 142:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #define wdt_enable(timeout) \
+ 143:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** do { \
+ 144:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** uint8_t temp; \
+ 145:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** __asm__ __volatile__ ( \
+ 146:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"wdr"									"\n\t" \
+ 147:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"out %[ccp_reg], %[ioreg_cen_mask]"		"\n\t" \
+ 148:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"lds %[tmp], %[wdt_reg]"				"\n\t" \
+ 149:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"sbr %[tmp], %[wdt_enable_timeout]"		"\n\t" \
+ 150:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"sts %[wdt_reg], %[tmp]"				"\n\t" \
+ 151:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"1:lds %[tmp], %[wdt_status_reg]"		"\n\t" \
+ 152:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"sbrc %[tmp], %[wdt_syncbusy_bit]"		"\n\t" \
+ 153:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"rjmp 1b"								"\n\t" \
+ 154:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	: [tmp]					"=r" (temp) \
+ 155:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	: [ccp_reg]				"I"  (_SFR_IO_ADDR(CCP)), \
+ 156:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	  [ioreg_cen_mask]		"r"  ((uint8_t)CCP_IOREG_gc), \
+ 157:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	  [wdt_reg]				"n"  (_SFR_MEM_ADDR(WDT_CTRLA)), \
+ 158:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	  [wdt_enable_timeout]	"M"  (timeout), \
+ 159:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	  [wdt_status_reg]		"n"  (_SFR_MEM_ADDR(WDT_STATUS)), \
+ 160:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	  [wdt_syncbusy_bit]	"I"  (WDT_SYNCBUSY_bm) \
+ 161:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** ); \
+ 162:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** } while(0)
+ 163:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 164:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #define wdt_disable() \
+ 165:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** do { \
+ 166:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** uint8_t temp; \
+ 167:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** __asm__ __volatile__ (  \
+ 168:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"wdr"								"\n\t" \
+ 169:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"out %[ccp_reg], %[ioreg_cen_mask]" "\n\t" \
+ 170:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"lds %[tmp], %[wdt_reg]"			"\n\t" \
+ 171:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"cbr %[tmp], %[timeout_mask]"       "\n\t" \
+ 172:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	"sts %[wdt_reg], %[tmp]"			"\n\t" \
+ 173:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : [tmp]            "=r" (temp) \
+ 174:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : [ccp_reg]        "I" (_SFR_IO_ADDR(CCP)),       \
+ 175:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [ioreg_cen_mask] "r" ((uint8_t)CCP_IOREG_gc),   \
+ 176:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [wdt_reg]        "n" (_SFR_MEM_ADDR(WDT_CTRLA)),\
+ 177:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [timeout_mask]   "I" (WDT_PERIOD_gm) \
+ 178:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** ); \
+ 179:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** } while(0)
+ 180:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 181:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #else // defined (WDT_CTRLA) && !defined(RAMPD)
+ 182:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 183:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** /*
+ 184:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    wdt_enable(timeout) for xmega devices
+ 185:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** ** write signature (CCP_IOREG_gc) that enables change of protected I/O
+ 186:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    registers to the CCP register
+ 187:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** ** At the same time,
+ 188:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    1) set WDT change enable (WDT_CEN_bm)
+ 189:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    2) enable WDT (WDT_ENABLE_bm)
+ 190:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    3) set timeout (timeout)
+ 191:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** ** Synchronization starts when ENABLE bit of WDT is set. So, wait till it
+ 192:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    finishes (SYNCBUSY of STATUS register is automatically cleared after the
+ 193:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****    sync is finished).
+ 194:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** */
+ 195:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #define wdt_enable(timeout) \
+ 196:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** do { \
+ 197:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** uint8_t temp; \
+ 198:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** __asm__ __volatile__ (         \
+ 199:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "in __tmp_reg__, %[rampd]"              "\n\t" \
+ 200:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out %[rampd], __zero_reg__"            "\n\t" \
+ 201:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out %[ccp_reg], %[ioreg_cen_mask]"     "\n\t" \
+ 202:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "sts %[wdt_reg], %[wdt_enable_timeout]" "\n\t" \
+ 203:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "1:lds %[tmp], %[wdt_status_reg]"       "\n\t" \
+ 204:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "sbrc %[tmp], %[wdt_syncbusy_bit]"      "\n\t" \
+ 205:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "rjmp 1b"                               "\n\t" \
+ 206:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out %[rampd], __tmp_reg__"             "\n\t" \
+ 207:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : [tmp]                "=r" (temp) \
+ 208:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : [rampd]              "I" (_SFR_IO_ADDR(RAMPD)),      \
+ 209:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [ccp_reg]            "I" (_SFR_IO_ADDR(CCP)),        \
+ 210:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [ioreg_cen_mask]     "r" ((uint8_t)CCP_IOREG_gc),     \
+ 211:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [wdt_reg]            "n" (_SFR_MEM_ADDR(WDT_CTRL)),   \
+ 212:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [wdt_enable_timeout] "r" ((uint8_t)(WDT_CEN_bm | WDT_ENABLE_bm | timeout)), \
+ 213:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [wdt_status_reg]     "n" (_SFR_MEM_ADDR(WDT_STATUS)), \
+ 214:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [wdt_syncbusy_bit]   "I" (WDT_SYNCBUSY_bm)            \
+ 215:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : "r0" \
+ 216:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** ); \
+ 217:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** } while(0)
+ 218:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 219:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #define wdt_disable() \
+ 220:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** __asm__ __volatile__ (  \
+ 221:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "in __tmp_reg__, %[rampd]"          "\n\t" \
+ 222:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out %[rampd], __zero_reg__"        "\n\t" \
+ 223:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out %[ccp_reg], %[ioreg_cen_mask]" "\n\t" \
+ 224:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "sts %[wdt_reg], %[disable_mask]"   "\n\t" \
+ 225:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out %[rampd], __tmp_reg__"         "\n\t" \
+ 226:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : \
+ 227:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : [rampd]             "I" (_SFR_IO_ADDR(RAMPD)),    \
+ 228:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [ccp_reg]           "I" (_SFR_IO_ADDR(CCP)),      \
+ 229:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [ioreg_cen_mask]    "r" ((uint8_t)CCP_IOREG_gc),   \
+ 230:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [wdt_reg]           "n" (_SFR_MEM_ADDR(WDT_CTRL)), \
+ 231:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [disable_mask]      "r" ((uint8_t)((~WDT_ENABLE_bm) | WDT_CEN_bm)) \
+ 232:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : "r0" \
+ 233:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** );
+ 234:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 235:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #endif // defined (WDT_CTRLA) && !defined(RAMPD)
+ 236:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 237:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #elif defined(__AVR_TINY__)
+ 238:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 239:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #define wdt_enable(value) \
+ 240:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** __asm__ __volatile__ ( \
+ 241:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "in __tmp_reg__,__SREG__" "\n\t"  \
+ 242:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "cli" "\n\t"  \
+ 243:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "wdr" "\n\t"  \
+ 244:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out %[CCPADDRESS],%[SIGNATURE]" "\n\t"  \
+ 245:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out %[WDTREG],%[WDVALUE]" "\n\t"  \
+ 246:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out __SREG__,__tmp_reg__" "\n\t"  \
+ 247:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : /* no outputs */  \
+ 248:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),  \
+ 249:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [SIGNATURE] "r" ((uint8_t)0xD8), \
+ 250:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)), \
+ 251:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00) \
+ 252:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       | _BV(WDE) | (value & 0x07) )) \
+ 253:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : "r16" \
+ 254:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** )
+ 255:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 256:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #define wdt_disable() \
+ 257:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** do { \
+ 258:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** uint8_t temp_wd; \
+ 259:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** __asm__ __volatile__ ( \
+ 260:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "in __tmp_reg__,__SREG__" "\n\t"  \
+ 261:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "cli" "\n\t"  \
+ 262:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "wdr" "\n\t"  \
+ 263:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out %[CCPADDRESS],%[SIGNATURE]" "\n\t"  \
+ 264:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "in  %[TEMP_WD],%[WDTREG]" "\n\t" \
+ 265:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "cbr %[TEMP_WD],%[WDVALUE]" "\n\t" \
+ 266:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out %[WDTREG],%[TEMP_WD]" "\n\t" \
+ 267:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     "out __SREG__,__tmp_reg__" "\n\t" \
+ 268:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : /*no output */ \
+ 269:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)), \
+ 270:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [SIGNATURE] "r" ((uint8_t)0xD8), \
+ 271:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)), \
+ 272:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [TEMP_WD] "d" (temp_wd), \
+ 273:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****       [WDVALUE] "n" (1 << WDE) \
+ 274:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****     : "r16" \
+ 275:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** ); \
+ 276:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** }while(0)
+ 277:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 278:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #elif defined(CCP)
+ 279:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 280:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** static __inline__
+ 281:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** __attribute__ ((__always_inline__))
+ 282:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** void wdt_enable (const uint8_t value)
+ 283:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** {
+ 284:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	if (!_SFR_IO_REG_P (CCP) && !_SFR_IO_REG_P (_WD_CONTROL_REG))
+ 285:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 286:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		__asm__ __volatile__ (
+ 287:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"in __tmp_reg__,__SREG__" "\n\t"
+ 288:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"cli" "\n\t"
+ 289:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"wdr" "\n\t"
+ 290:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"sts %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 291:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"sts %[WDTREG],%[WDVALUE]" "\n\t"
+ 292:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"out __SREG__,__tmp_reg__" "\n\t"
+ 293:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: /* no outputs */
+ 294:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: [CCPADDRESS] "n" (_SFR_MEM_ADDR(CCP)),
+ 295:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[SIGNATURE] "r" ((uint8_t)0xD8),
+ 296:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[WDTREG] "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
+ 297:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
+ 298:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				| _BV(WDE) | (value & 0x07) ))
+ 299:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: "r0"
+ 300:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			);
+ 301:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 302:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	else if (!_SFR_IO_REG_P (CCP) && _SFR_IO_REG_P (_WD_CONTROL_REG))
+ 303:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 304:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		__asm__ __volatile__ (
+ 305:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"in __tmp_reg__,__SREG__" "\n\t"
+ 306:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"cli" "\n\t"
+ 307:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"wdr" "\n\t"
+ 308:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"sts %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 309:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"out %[WDTREG],%[WDVALUE]" "\n\t"
+ 310:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"out __SREG__,__tmp_reg__" "\n\t"
+ 311:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: /* no outputs */
+ 312:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: [CCPADDRESS] "n" (_SFR_MEM_ADDR(CCP)),
+ 313:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[SIGNATURE] "r" ((uint8_t)0xD8),
+ 314:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 315:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
+ 316:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				| _BV(WDE) | (value & 0x07) ))
+ 317:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: "r0"
+ 318:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			);
+ 319:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 320:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	else if (_SFR_IO_REG_P (CCP) && !_SFR_IO_REG_P (_WD_CONTROL_REG))
+ 321:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 322:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		__asm__ __volatile__ (
+ 323:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"in __tmp_reg__,__SREG__" "\n\t"
+ 324:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"cli" "\n\t"
+ 325:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"wdr" "\n\t"
+ 326:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"out %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 327:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"sts %[WDTREG],%[WDVALUE]" "\n\t"
+ 328:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"out __SREG__,__tmp_reg__" "\n\t"
+ 329:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: /* no outputs */
+ 330:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
+ 331:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[SIGNATURE] "r" ((uint8_t)0xD8),
+ 332:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[WDTREG] "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
+ 333:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
+ 334:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				| _BV(WDE) | (value & 0x07) ))
+ 335:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: "r0"
+ 336:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			);
+ 337:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 338:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	else
+ 339:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****  	{
+ 340:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		__asm__ __volatile__ (
+ 341:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"in __tmp_reg__,__SREG__" "\n\t"
+ 342:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"cli" "\n\t"
+ 343:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"wdr" "\n\t"
+ 344:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"out %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 345:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"out %[WDTREG],%[WDVALUE]" "\n\t"
+ 346:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			"out __SREG__,__tmp_reg__" "\n\t"
+ 347:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: /* no outputs */
+ 348:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
+ 349:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[SIGNATURE] "r" ((uint8_t)0xD8),
+ 350:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 351:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			[WDVALUE] "r" ((uint8_t)((value & 0x08 ? _WD_PS3_MASK : 0x00)
+ 352:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				| _BV(WDE) | (value & 0x07) ))
+ 353:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			: "r0"
+ 354:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 			);
+ 355:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 356:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** }
+ 357:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 358:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** static __inline__
+ 359:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** __attribute__ ((__always_inline__))
+ 360:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** void wdt_disable (void)
+ 361:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** {
+ 362:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	if (!_SFR_IO_REG_P (CCP) && !_SFR_IO_REG_P(_WD_CONTROL_REG))
+ 363:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 364:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****         uint8_t temp_wd;
+ 365:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****         __asm__ __volatile__ (
+ 366:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 367:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cli" "\n\t"
+ 368:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"wdr" "\n\t"
+ 369:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"sts %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 370:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"lds %[TEMP_WD],%[WDTREG]" "\n\t"
+ 371:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cbr %[TEMP_WD],%[WDVALUE]" "\n\t"
+ 372:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"sts %[WDTREG],%[TEMP_WD]" "\n\t"
+ 373:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 374:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: /*no output */
+ 375:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: [CCPADDRESS] "n" (_SFR_MEM_ADDR(CCP)),
+ 376:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[SIGNATURE] "r" ((uint8_t)0xD8),
+ 377:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[WDTREG] "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
+ 378:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[TEMP_WD] "d" (temp_wd),
+ 379:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[WDVALUE] "n" (1 << WDE)
+ 380:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: "r0"
+ 381:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				);
+ 382:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 383:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	else if (!_SFR_IO_REG_P (CCP) && _SFR_IO_REG_P(_WD_CONTROL_REG))
+ 384:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 385:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****         uint8_t temp_wd;
+ 386:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****         __asm__ __volatile__ (
+ 387:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 388:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cli" "\n\t"
+ 389:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"wdr" "\n\t"
+ 390:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"sts %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 391:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"in %[TEMP_WD],%[WDTREG]" "\n\t"
+ 392:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cbr %[TEMP_WD],%[WDVALUE]" "\n\t"
+ 393:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out %[WDTREG],%[TEMP_WD]" "\n\t"
+ 394:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 395:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: /*no output */
+ 396:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: [CCPADDRESS] "n" (_SFR_MEM_ADDR(CCP)),
+ 397:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[SIGNATURE] "r" ((uint8_t)0xD8),
+ 398:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 399:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[TEMP_WD] "d" (temp_wd),
+ 400:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[WDVALUE] "n" (1 << WDE)
+ 401:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: "r0"
+ 402:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				);
+ 403:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 404:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	else if (_SFR_IO_REG_P (CCP) && !_SFR_IO_REG_P(_WD_CONTROL_REG))
+ 405:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 406:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****         uint8_t temp_wd;
+ 407:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****         __asm__ __volatile__ (
+ 408:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 409:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cli" "\n\t"
+ 410:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"wdr" "\n\t"
+ 411:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 412:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"lds %[TEMP_WD],%[WDTREG]" "\n\t"
+ 413:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cbr %[TEMP_WD],%[WDVALUE]" "\n\t"
+ 414:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"sts %[WDTREG],%[TEMP_WD]" "\n\t"
+ 415:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 416:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: /*no output */
+ 417:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
+ 418:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[SIGNATURE] "r" ((uint8_t)0xD8),
+ 419:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[WDTREG] "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
+ 420:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[TEMP_WD] "d" (temp_wd),
+ 421:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[WDVALUE] "n" (1 << WDE)
+ 422:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: "r0"
+ 423:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				);
+ 424:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 425:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	else
+ 426:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 427:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****         uint8_t temp_wd;
+ 428:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****         __asm__ __volatile__ (
+ 429:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 430:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cli" "\n\t"
+ 431:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"wdr" "\n\t"
+ 432:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out %[CCPADDRESS],%[SIGNATURE]" "\n\t"
+ 433:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"in %[TEMP_WD],%[WDTREG]" "\n\t"
+ 434:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cbr %[TEMP_WD],%[WDVALUE]" "\n\t"
+ 435:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out %[WDTREG],%[TEMP_WD]" "\n\t"
+ 436:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 437:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: /*no output */
+ 438:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: [CCPADDRESS] "I" (_SFR_IO_ADDR(CCP)),
+ 439:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[SIGNATURE] "r" ((uint8_t)0xD8),
+ 440:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[WDTREG] "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 441:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[TEMP_WD] "d" (temp_wd),
+ 442:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[WDVALUE] "n" (1 << WDE)
+ 443:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: "r0"
+ 444:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				);
+ 445:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 446:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** }
+ 447:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 448:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** #else
+ 449:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 450:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** static __inline__
+ 451:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** __attribute__ ((__always_inline__))
+ 452:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** void wdt_enable (const uint8_t value)
+ 453:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** {
+ 454:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	if (_SFR_IO_REG_P (_WD_CONTROL_REG))
+ 455:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 456:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		__asm__ __volatile__ (
+ 457:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 458:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cli" "\n\t"
+ 459:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"wdr" "\n\t"
+ 460:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out %0, %1" "\n\t"
+ 461:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 462:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out %0, %2" "\n \t"
+ 463:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: /* no outputs */
+ 464:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: "I" (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 465:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"r" ((uint8_t)(_BV(_WD_CHANGE_BIT) | _BV(WDE))),
+ 466:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"r" ((uint8_t) ((value & 0x08 ? _WD_PS3_MASK : 0x00) |
+ 467:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 						_BV(WDE) | (value & 0x07)) )
+ 468:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: "r0"
+ 469:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		);
+ 470:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 471:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	else
+ 472:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 473:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		__asm__ __volatile__ (
+ 474:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"in __tmp_reg__,__SREG__" "\n\t"
+ 475:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cli" "\n\t"
+ 476:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"wdr" "\n\t"
+ 477:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"sts %0, %1" "\n\t"
+ 478:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out __SREG__,__tmp_reg__" "\n\t"
+ 479:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"sts %0, %2" "\n \t"
+ 480:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: /* no outputs */
+ 481:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: "n" (_SFR_MEM_ADDR(_WD_CONTROL_REG)),
+ 482:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"r" ((uint8_t)(_BV(_WD_CHANGE_BIT) | _BV(WDE))),
+ 483:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"r" ((uint8_t) ((value & 0x08 ? _WD_PS3_MASK : 0x00) |
+ 484:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 						_BV(WDE) | (value & 0x07)) )
+ 485:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: "r0"
+ 486:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		);
+ 487:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 488:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** }
+ 489:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 
+ 490:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** static __inline__
+ 491:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** __attribute__ ((__always_inline__))
+ 492:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** void wdt_disable (void)
+ 493:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** {
+ 494:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	if (_SFR_IO_REG_P (_WD_CONTROL_REG))
+ 495:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 496:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****         uint8_t register temp_reg;
+ 497:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		__asm__ __volatile__ (
+ 498:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"in __tmp_reg__,__SREG__"    "\n\t"
+ 499:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"cli"                        "\n\t"
+ 500:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"wdr"                        "\n\t"
+ 501:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"in  %[TEMPREG],%[WDTREG]"   "\n\t"
+ 502:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"ori %[TEMPREG],%[WDCE_WDE]" "\n\t"
+ 503:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out %[WDTREG],%[TEMPREG]"   "\n\t"
+ 504:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out %[WDTREG],__zero_reg__" "\n\t"
+ 505:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				"out __SREG__,__tmp_reg__"   "\n\t"
+ 506:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: [TEMPREG] "=d" (temp_reg)
+ 507:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: [WDTREG]  "I"  (_SFR_IO_ADDR(_WD_CONTROL_REG)),
+ 508:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				[WDCE_WDE]  "n"  ((uint8_t)(_BV(_WD_CHANGE_BIT) | _BV(WDE)))
+ 509:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 				: "r0"
+ 510:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		);
+ 511:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	}
+ 512:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	else
+ 513:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 	{
+ 514:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h ****         uint8_t register temp_reg;
+ 515:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h **** 		__asm__ __volatile__ (
+ 174               		.loc 4 515 0
+ 175               	/* #APP */
+ 176               	 ;  515 "c:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\wdt.h" 1
+ 177 0006 0FB6      		in __tmp_reg__,__SREG__
+ 178 0008 F894      		cli
+ 179 000a A895      		wdr
+ 180 000c 8091 6000 		lds r24,96
+ 181 0010 8861      		ori r24,24
+ 182 0012 8093 6000 		sts 96,r24
+ 183 0016 1092 6000 		sts 96,__zero_reg__
+ 184 001a 0FBE      		out __SREG__,__tmp_reg__
+ 185               		
+ 186               	 ;  0 "" 2
+ 187               	.LVL11:
+ 188               	/* #NOAPP */
+ 189               	.LBE51:
+ 190               	.LBE50:
+ 191               	.LBB52:
+ 192               	.LBB53:
+ 193               		.file 5 "../../LUFA/Drivers/Peripheral/Serial.h"
+   1:../../LUFA/Drivers/Peripheral/Serial.h **** /*
+   2:../../LUFA/Drivers/Peripheral/Serial.h ****              LUFA Library
+   3:../../LUFA/Drivers/Peripheral/Serial.h ****      Copyright (C) Dean Camera, 2010.
+   4:../../LUFA/Drivers/Peripheral/Serial.h ****               
+   5:../../LUFA/Drivers/Peripheral/Serial.h ****   dean [at] fourwalledcubicle [dot] com
+   6:../../LUFA/Drivers/Peripheral/Serial.h ****       www.fourwalledcubicle.com
+   7:../../LUFA/Drivers/Peripheral/Serial.h **** */
+   8:../../LUFA/Drivers/Peripheral/Serial.h **** 
+   9:../../LUFA/Drivers/Peripheral/Serial.h **** /*
+  10:../../LUFA/Drivers/Peripheral/Serial.h ****   Copyright 2010  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:../../LUFA/Drivers/Peripheral/Serial.h **** 
+  12:../../LUFA/Drivers/Peripheral/Serial.h ****   Permission to use, copy, modify, distribute, and sell this 
+  13:../../LUFA/Drivers/Peripheral/Serial.h ****   software and its documentation for any purpose is hereby granted
+  14:../../LUFA/Drivers/Peripheral/Serial.h ****   without fee, provided that the above copyright notice appear in 
+  15:../../LUFA/Drivers/Peripheral/Serial.h ****   all copies and that both that the copyright notice and this
+  16:../../LUFA/Drivers/Peripheral/Serial.h ****   permission notice and warranty disclaimer appear in supporting 
+  17:../../LUFA/Drivers/Peripheral/Serial.h ****   documentation, and that the name of the author not be used in 
+  18:../../LUFA/Drivers/Peripheral/Serial.h ****   advertising or publicity pertaining to distribution of the 
+  19:../../LUFA/Drivers/Peripheral/Serial.h ****   software without specific, written prior permission.
+  20:../../LUFA/Drivers/Peripheral/Serial.h **** 
+  21:../../LUFA/Drivers/Peripheral/Serial.h ****   The author disclaim all warranties with regard to this
+  22:../../LUFA/Drivers/Peripheral/Serial.h ****   software, including all implied warranties of merchantability
+  23:../../LUFA/Drivers/Peripheral/Serial.h ****   and fitness.  In no event shall the author be liable for any
+  24:../../LUFA/Drivers/Peripheral/Serial.h ****   special, indirect or consequential damages or any damages
+  25:../../LUFA/Drivers/Peripheral/Serial.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:../../LUFA/Drivers/Peripheral/Serial.h ****   in an action of contract, negligence or other tortious action,
+  27:../../LUFA/Drivers/Peripheral/Serial.h ****   arising out of or in connection with the use or performance of
+  28:../../LUFA/Drivers/Peripheral/Serial.h ****   this software.
+  29:../../LUFA/Drivers/Peripheral/Serial.h **** */
+  30:../../LUFA/Drivers/Peripheral/Serial.h **** 
+  31:../../LUFA/Drivers/Peripheral/Serial.h **** /** \file
+  32:../../LUFA/Drivers/Peripheral/Serial.h ****  *  \brief Master include file for the USART peripheral driver.
+  33:../../LUFA/Drivers/Peripheral/Serial.h ****  *
+  34:../../LUFA/Drivers/Peripheral/Serial.h ****  *  Driver for the USART subsystem on supported USB AVRs.
+  35:../../LUFA/Drivers/Peripheral/Serial.h ****  */
+  36:../../LUFA/Drivers/Peripheral/Serial.h ****  
+  37:../../LUFA/Drivers/Peripheral/Serial.h **** /** \ingroup Group_PeripheralDrivers
+  38:../../LUFA/Drivers/Peripheral/Serial.h ****  *  @defgroup Group_Serial Serial USART Driver - LUFA/Drivers/Peripheral/Serial.h
+  39:../../LUFA/Drivers/Peripheral/Serial.h ****  *
+  40:../../LUFA/Drivers/Peripheral/Serial.h ****  *  \section Sec_Dependencies Module Source Dependencies
+  41:../../LUFA/Drivers/Peripheral/Serial.h ****  *  The following files must be built with any user project that uses this module:
+  42:../../LUFA/Drivers/Peripheral/Serial.h ****  *    - LUFA/Drivers/Peripheral/Serial.c <i>(Makefile source module name: LUFA_SRC_SERIAL)</i>
+  43:../../LUFA/Drivers/Peripheral/Serial.h ****  *
+  44:../../LUFA/Drivers/Peripheral/Serial.h ****  *  \section Module Description
+  45:../../LUFA/Drivers/Peripheral/Serial.h ****  *  Hardware serial USART driver. This module provides an easy to use driver for
+  46:../../LUFA/Drivers/Peripheral/Serial.h ****  *  the setup of and transfer of data over the AVR's USART port.
+  47:../../LUFA/Drivers/Peripheral/Serial.h ****  *
+  48:../../LUFA/Drivers/Peripheral/Serial.h ****  *  @{
+  49:../../LUFA/Drivers/Peripheral/Serial.h ****  */
+  50:../../LUFA/Drivers/Peripheral/Serial.h ****  
+  51:../../LUFA/Drivers/Peripheral/Serial.h **** #ifndef __SERIAL_H__
+  52:../../LUFA/Drivers/Peripheral/Serial.h **** #define __SERIAL_H__
+  53:../../LUFA/Drivers/Peripheral/Serial.h **** 
+  54:../../LUFA/Drivers/Peripheral/Serial.h **** 	/* Includes: */
+  55:../../LUFA/Drivers/Peripheral/Serial.h **** 		#include <avr/io.h>
+  56:../../LUFA/Drivers/Peripheral/Serial.h **** 		#include <avr/pgmspace.h>
+  57:../../LUFA/Drivers/Peripheral/Serial.h **** 		#include <stdbool.h>
+  58:../../LUFA/Drivers/Peripheral/Serial.h **** 		
+  59:../../LUFA/Drivers/Peripheral/Serial.h **** 		#include "../../Common/Common.h"
+  60:../../LUFA/Drivers/Peripheral/Serial.h **** 		#include "../Misc/TerminalCodes.h"
+  61:../../LUFA/Drivers/Peripheral/Serial.h **** 
+  62:../../LUFA/Drivers/Peripheral/Serial.h **** 	/* Enable C linkage for C++ Compilers: */
+  63:../../LUFA/Drivers/Peripheral/Serial.h **** 		#if defined(__cplusplus)
+  64:../../LUFA/Drivers/Peripheral/Serial.h **** 			extern "C" {
+  65:../../LUFA/Drivers/Peripheral/Serial.h **** 		#endif
+  66:../../LUFA/Drivers/Peripheral/Serial.h **** 
+  67:../../LUFA/Drivers/Peripheral/Serial.h **** 	/* Public Interface - May be used in end-application: */
+  68:../../LUFA/Drivers/Peripheral/Serial.h **** 		/* Macros: */
+  69:../../LUFA/Drivers/Peripheral/Serial.h **** 			/** Macro for calculating the baud value from a given baud rate when the U2X (double speed) bit 
+  70:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *  not set.
+  71:../../LUFA/Drivers/Peripheral/Serial.h **** 			 */
+  72:../../LUFA/Drivers/Peripheral/Serial.h **** 			#define SERIAL_UBBRVAL(baud)    ((((F_CPU / 16) + (baud / 2)) / (baud)) - 1)
+  73:../../LUFA/Drivers/Peripheral/Serial.h **** 
+  74:../../LUFA/Drivers/Peripheral/Serial.h **** 			/** Macro for calculating the baud value from a given baud rate when the U2X (double speed) bit 
+  75:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *  set.
+  76:../../LUFA/Drivers/Peripheral/Serial.h **** 			 */
+  77:../../LUFA/Drivers/Peripheral/Serial.h **** 			#define SERIAL_2X_UBBRVAL(baud) ((((F_CPU / 8) + (baud / 2)) / (baud)) - 1)
+  78:../../LUFA/Drivers/Peripheral/Serial.h **** 
+  79:../../LUFA/Drivers/Peripheral/Serial.h **** 		/* Function Prototypes: */
+  80:../../LUFA/Drivers/Peripheral/Serial.h **** 			/** Transmits a given string located in program space (FLASH) through the USART.
+  81:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *
+  82:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *  \param[in] FlashStringPtr  Pointer to a string located in program space.
+  83:../../LUFA/Drivers/Peripheral/Serial.h **** 			 */
+  84:../../LUFA/Drivers/Peripheral/Serial.h **** 			void Serial_TxString_P(const char* FlashStringPtr) ATTR_NON_NULL_PTR_ARG(1);
+  85:../../LUFA/Drivers/Peripheral/Serial.h **** 
+  86:../../LUFA/Drivers/Peripheral/Serial.h **** 			/** Transmits a given string located in SRAM memory through the USART.
+  87:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *
+  88:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *  \param[in] StringPtr  Pointer to a string located in SRAM space.
+  89:../../LUFA/Drivers/Peripheral/Serial.h **** 			 */
+  90:../../LUFA/Drivers/Peripheral/Serial.h **** 			void Serial_TxString(const char* StringPtr) ATTR_NON_NULL_PTR_ARG(1);
+  91:../../LUFA/Drivers/Peripheral/Serial.h **** 
+  92:../../LUFA/Drivers/Peripheral/Serial.h **** 		/* Inline Functions: */
+  93:../../LUFA/Drivers/Peripheral/Serial.h **** 			/** Initializes the USART, ready for serial data transmission and reception. This initializes th
+  94:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *  standard 8-bit, no parity, 1 stop bit settings suitable for most applications.
+  95:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *
+  96:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *  \param[in] BaudRate     Serial baud rate, in bits per second.
+  97:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *  \param[in] DoubleSpeed  Enables double speed mode when set, halving the sample time to doubl
+  98:../../LUFA/Drivers/Peripheral/Serial.h **** 			 */
+  99:../../LUFA/Drivers/Peripheral/Serial.h **** 			static inline void Serial_Init(const uint32_t BaudRate,
+ 100:../../LUFA/Drivers/Peripheral/Serial.h **** 			                               const bool DoubleSpeed)
+ 101:../../LUFA/Drivers/Peripheral/Serial.h **** 			{
+ 102:../../LUFA/Drivers/Peripheral/Serial.h **** 				UBRR1  = (DoubleSpeed ? SERIAL_2X_UBBRVAL(BaudRate) : SERIAL_UBBRVAL(BaudRate));
+ 194               		.loc 5 102 0
+ 195 001c 87E6      		ldi r24,lo8(103)
+ 196 001e 90E0      		ldi r25,0
+ 197 0020 9093 CD00 		sts 204+1,r25
+ 198 0024 8093 CC00 		sts 204,r24
+ 103:../../LUFA/Drivers/Peripheral/Serial.h **** 
+ 104:../../LUFA/Drivers/Peripheral/Serial.h **** 				UCSR1C = ((1 << UCSZ11) | (1 << UCSZ10));
+ 199               		.loc 5 104 0
+ 200 0028 86E0      		ldi r24,lo8(6)
+ 201 002a 8093 CA00 		sts 202,r24
+ 105:../../LUFA/Drivers/Peripheral/Serial.h **** 				UCSR1A = (DoubleSpeed ? (1 << U2X1) : 0);
+ 202               		.loc 5 105 0
+ 203 002e 1092 C800 		sts 200,__zero_reg__
+ 106:../../LUFA/Drivers/Peripheral/Serial.h **** 				UCSR1B = ((1 << TXEN1)  | (1 << RXEN1));
+ 204               		.loc 5 106 0
+ 205 0032 88E1      		ldi r24,lo8(24)
+ 206 0034 8093 C900 		sts 201,r24
+ 107:../../LUFA/Drivers/Peripheral/Serial.h **** 				
+ 108:../../LUFA/Drivers/Peripheral/Serial.h **** 				DDRD  |= (1 << 3);
+ 207               		.loc 5 108 0
+ 208 0038 539A      		sbi 0xa,3
+ 109:../../LUFA/Drivers/Peripheral/Serial.h **** 				PORTD |= (1 << 2);
+ 209               		.loc 5 109 0
+ 210 003a 5A9A      		sbi 0xb,2
+ 211               	.LBE53:
+ 212               	.LBE52:
+ 213               	.LBB54:
+ 214               	.LBB55:
+ 215               		.file 6 "./Board/LEDs.h"
+   1:./Board/LEDs.h **** /*
+   2:./Board/LEDs.h ****              LUFA Library
+   3:./Board/LEDs.h ****      Copyright (C) Dean Camera, 2010.
+   4:./Board/LEDs.h ****               
+   5:./Board/LEDs.h ****   dean [at] fourwalledcubicle [dot] com
+   6:./Board/LEDs.h ****       www.fourwalledcubicle.com
+   7:./Board/LEDs.h **** */
+   8:./Board/LEDs.h **** 
+   9:./Board/LEDs.h **** /*
+  10:./Board/LEDs.h ****   Copyright 2010  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  11:./Board/LEDs.h **** 
+  12:./Board/LEDs.h ****   Permission to use, copy, modify, distribute, and sell this 
+  13:./Board/LEDs.h ****   software and its documentation for any purpose is hereby granted
+  14:./Board/LEDs.h ****   without fee, provided that the above copyright notice appear in 
+  15:./Board/LEDs.h ****   all copies and that both that the copyright notice and this
+  16:./Board/LEDs.h ****   permission notice and warranty disclaimer appear in supporting 
+  17:./Board/LEDs.h ****   documentation, and that the name of the author not be used in 
+  18:./Board/LEDs.h ****   advertising or publicity pertaining to distribution of the 
+  19:./Board/LEDs.h ****   software without specific, written prior permission.
+  20:./Board/LEDs.h **** 
+  21:./Board/LEDs.h ****   The author disclaim all warranties with regard to this
+  22:./Board/LEDs.h ****   software, including all implied warranties of merchantability
+  23:./Board/LEDs.h ****   and fitness.  In no event shall the author be liable for any
+  24:./Board/LEDs.h ****   special, indirect or consequential damages or any damages
+  25:./Board/LEDs.h ****   whatsoever resulting from loss of use, data or profits, whether
+  26:./Board/LEDs.h ****   in an action of contract, negligence or other tortious action,
+  27:./Board/LEDs.h ****   arising out of or in connection with the use or performance of
+  28:./Board/LEDs.h ****   this software.
+  29:./Board/LEDs.h **** */
+  30:./Board/LEDs.h **** 
+  31:./Board/LEDs.h **** /*
+  32:./Board/LEDs.h ****    Board LEDs driver for the Benito board, from www.dorkbotpdx.org.
+  33:./Board/LEDs.h **** */
+  34:./Board/LEDs.h **** 
+  35:./Board/LEDs.h **** #ifndef __LEDS_ARDUINOUNO_H__
+  36:./Board/LEDs.h **** #define __LEDS_ARDUINOUNO_H__
+  37:./Board/LEDs.h **** 
+  38:./Board/LEDs.h **** 	/* Includes: */
+  39:./Board/LEDs.h **** 		#include <avr/io.h>
+  40:./Board/LEDs.h **** 
+  41:./Board/LEDs.h **** /* Enable C linkage for C++ Compilers: */
+  42:./Board/LEDs.h **** 		#if defined(__cplusplus)
+  43:./Board/LEDs.h **** 			extern "C" {
+  44:./Board/LEDs.h **** 		#endif
+  45:./Board/LEDs.h **** 
+  46:./Board/LEDs.h **** 	/* Preprocessor Checks: */
+  47:./Board/LEDs.h **** 		#if !defined(INCLUDE_FROM_LEDS_H)
+  48:./Board/LEDs.h **** 			#error Do not include this file directly. Include LUFA/Drivers/Board/LEDS.h instead.
+  49:./Board/LEDs.h **** 		#endif
+  50:./Board/LEDs.h **** 
+  51:./Board/LEDs.h **** 	/* Public Interface - May be used in end-application: */
+  52:./Board/LEDs.h **** 		/* Macros: */
+  53:./Board/LEDs.h **** 			/** LED mask for the first LED on the board. */
+  54:./Board/LEDs.h **** 			#define LEDS_LED1        (1 << 5)
+  55:./Board/LEDs.h **** 
+  56:./Board/LEDs.h **** 			/** LED mask for the second LED on the board. */
+  57:./Board/LEDs.h **** 			#define LEDS_LED2        (1 << 4)
+  58:./Board/LEDs.h **** 
+  59:./Board/LEDs.h **** 			/** LED mask for all the LEDs on the board. */
+  60:./Board/LEDs.h **** 			#define LEDS_ALL_LEDS    (LEDS_LED1 | LEDS_LED2)
+  61:./Board/LEDs.h **** 
+  62:./Board/LEDs.h **** 			/** LED mask for the none of the board LEDs */
+  63:./Board/LEDs.h **** 			#define LEDS_NO_LEDS     0
+  64:./Board/LEDs.h **** 
+  65:./Board/LEDs.h **** 		/* Inline Functions: */
+  66:./Board/LEDs.h **** 		#if !defined(__DOXYGEN__)
+  67:./Board/LEDs.h **** 			static inline void LEDs_Init(void)
+  68:./Board/LEDs.h **** 			{
+  69:./Board/LEDs.h **** 				DDRD  |= LEDS_ALL_LEDS;
+ 216               		.loc 6 69 0
+ 217 003c 8AB1      		in r24,0xa
+ 218 003e 8063      		ori r24,lo8(48)
+ 219 0040 8AB9      		out 0xa,r24
+  70:./Board/LEDs.h **** 				PORTD |= LEDS_ALL_LEDS;
+ 220               		.loc 6 70 0
+ 221 0042 8BB1      		in r24,0xb
+ 222 0044 8063      		ori r24,lo8(48)
+ 223 0046 8BB9      		out 0xb,r24
+ 224               	.LBE55:
+ 225               	.LBE54:
+ 143:Arduino-usbserial.c **** 	wdt_disable();
+ 144:Arduino-usbserial.c **** 
+ 145:Arduino-usbserial.c **** 	/* Hardware Initialization */
+ 146:Arduino-usbserial.c **** 	Serial_Init(9600, false);
+ 147:Arduino-usbserial.c **** 	LEDs_Init();
+ 148:Arduino-usbserial.c **** 	USB_Init();
+ 226               		.loc 3 148 0
+ 227 0048 0E94 0000 		call USB_Init
+ 228               	.LVL12:
+ 149:Arduino-usbserial.c **** 
+ 150:Arduino-usbserial.c **** 	/* Start the flush timer so that overflows occur rapidly to push received bytes to the USB interfa
+ 151:Arduino-usbserial.c **** 	TCCR0B = (1 << CS02);
+ 229               		.loc 3 151 0
+ 230 004c 84E0      		ldi r24,lo8(4)
+ 231 004e 85BD      		out 0x25,r24
+ 152:Arduino-usbserial.c **** 	
+ 153:Arduino-usbserial.c **** 	/* Pull target /RESET line high */
+ 154:Arduino-usbserial.c **** 	AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
+ 232               		.loc 3 154 0
+ 233 0050 5F9A      		sbi 0xb,7
+ 155:Arduino-usbserial.c **** 	AVR_RESET_LINE_DDR  |= AVR_RESET_LINE_MASK;
+ 234               		.loc 3 155 0
+ 235 0052 579A      		sbi 0xa,7
+ 236 0054 0895      		ret
+ 237               		.cfi_endproc
+ 238               	.LFE90:
+ 240               		.section	.text.startup.main,"ax",@progbits
+ 241               	.global	main
+ 243               	main:
+ 244               	.LFB89:
+  81:Arduino-usbserial.c **** 	SetupHardware();
+ 245               		.loc 3 81 0
+ 246               		.cfi_startproc
+ 247               	/* prologue: function */
+ 248               	/* frame size = 0 */
+ 249               	/* stack size = 0 */
+ 250               	.L__stack_usage = 0
+  82:Arduino-usbserial.c **** 	
+ 251               		.loc 3 82 0
+ 252 0000 0E94 0000 		call SetupHardware
+ 253               	.LVL13:
+ 254               	.LBB107:
+ 255               	.LBB108:
+  87:Lib/LightweightRingBuff.h **** 			{
+ 256               		.loc 1 87 0
+ 257 0004 2FB7      		in r18,__SREG__
+ 258               	.LVL14:
+ 259               	.LBB109:
+ 260               	.LBB110:
+  50:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     return 1;
+ 261               		.loc 2 50 0
+ 262               	/* #APP */
+ 263               	 ;  50 "c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h" 1
+ 264 0006 F894      		cli
+ 265               	 ;  0 "" 2
+ 266               	.LVL15:
+ 267               	/* #NOAPP */
+ 268               	.LBE110:
+ 269               	.LBE109:
+  89:Lib/LightweightRingBuff.h **** 				Buffer->Out = Buffer->Buffer;
+ 270               		.loc 1 89 0
+ 271 0008 80E0      		ldi r24,lo8(USBtoUSART_Buffer)
+ 272 000a 90E0      		ldi r25,hi8(USBtoUSART_Buffer)
+ 273 000c 9093 0000 		sts USBtoUSART_Buffer+128+1,r25
+ 274 0010 8093 0000 		sts USBtoUSART_Buffer+128,r24
+  90:Lib/LightweightRingBuff.h **** 			}
+ 275               		.loc 1 90 0
+ 276 0014 9093 0000 		sts USBtoUSART_Buffer+130+1,r25
+ 277 0018 8093 0000 		sts USBtoUSART_Buffer+130,r24
+ 278               	.LVL16:
+ 279               	.LBB111:
+ 280               	.LBB112:
+  70:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 281               		.loc 2 70 0
+ 282 001c 2FBF      		out __SREG__,r18
+ 283               		.loc 2 71 0
+ 284               	.LVL17:
+ 285               	.LBE112:
+ 286               	.LBE111:
+ 287               	.LBE108:
+ 288               	.LBE107:
+ 289               	.LBB113:
+ 290               	.LBB114:
+  87:Lib/LightweightRingBuff.h **** 			{
+ 291               		.loc 1 87 0
+ 292 001e 2FB7      		in r18,__SREG__
+ 293               	.LVL18:
+ 294               	.LBB115:
+ 295               	.LBB116:
+  50:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     return 1;
+ 296               		.loc 2 50 0
+ 297               	/* #APP */
+ 298               	 ;  50 "c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h" 1
+ 299 0020 F894      		cli
+ 300               	 ;  0 "" 2
+ 301               	.LVL19:
+ 302               	/* #NOAPP */
+ 303               	.LBE116:
+ 304               	.LBE115:
+  89:Lib/LightweightRingBuff.h **** 				Buffer->Out = Buffer->Buffer;
+ 305               		.loc 1 89 0
+ 306 0022 80E0      		ldi r24,lo8(USARTtoUSB_Buffer)
+ 307 0024 90E0      		ldi r25,hi8(USARTtoUSB_Buffer)
+ 308 0026 9093 0000 		sts USARTtoUSB_Buffer+128+1,r25
+ 309 002a 8093 0000 		sts USARTtoUSB_Buffer+128,r24
+  90:Lib/LightweightRingBuff.h **** 			}
+ 310               		.loc 1 90 0
+ 311 002e 9093 0000 		sts USARTtoUSB_Buffer+130+1,r25
+ 312 0032 8093 0000 		sts USARTtoUSB_Buffer+130,r24
+ 313               	.LVL20:
+ 314               	.LBB117:
+ 315               	.LBB118:
+  70:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 316               		.loc 2 70 0
+ 317 0036 2FBF      		out __SREG__,r18
+ 318               	.LVL21:
+ 319               		.loc 2 71 0
+ 320               	.LBE118:
+ 321               	.LBE117:
+ 322               	.LBE114:
+ 323               	.LBE113:
+  87:Arduino-usbserial.c **** 
+ 324               		.loc 3 87 0
+ 325               	/* #APP */
+ 326               	 ;  87 "Arduino-usbserial.c" 1
+ 327 0038 7894      		sei
+ 328               	 ;  0 "" 2
+ 329               	/* #NOAPP */
+ 330               	.LBB119:
+ 109:Arduino-usbserial.c **** 			}
+ 331               		.loc 3 109 0
+ 332 003a D3E0      		ldi r29,lo8(3)
+ 333               	.LVL22:
+ 334               	.L22:
+ 335               	.LBB120:
+ 336               	.LBB121:
+ 337               	.LBB122:
+ 338               	.LBB123:
+ 111:Lib/LightweightRingBuff.h **** 			{
+ 339               		.loc 1 111 0
+ 340 003c 9FB7      		in r25,__SREG__
+ 341               	.LVL23:
+ 342               	.LBB124:
+ 343               	.LBB125:
+  50:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     return 1;
+ 344               		.loc 2 50 0
+ 345               	/* #APP */
+ 346               	 ;  50 "c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h" 1
+ 347 003e F894      		cli
+ 348               	 ;  0 "" 2
+ 349               	.LVL24:
+ 350               	/* #NOAPP */
+ 351               	.LBE125:
+ 352               	.LBE124:
+ 113:Lib/LightweightRingBuff.h **** 			}
+ 353               		.loc 1 113 0
+ 354 0040 8091 0000 		lds r24,USBtoUSART_Buffer+132
+ 355               	.LVL25:
+ 356               	.LBB126:
+ 357               	.LBB127:
+  70:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 358               		.loc 2 70 0
+ 359 0044 9FBF      		out __SREG__,r25
+ 360               		.loc 2 71 0
+ 361               	.LBE127:
+ 362               	.LBE126:
+ 363               	.LBE123:
+ 364               	.LBE122:
+ 365               	.LBE121:
+ 366               	.LBE120:
+  92:Arduino-usbserial.c **** 		{
+ 367               		.loc 3 92 0
+ 368 0046 8038      		cpi r24,lo8(-128)
+ 369 0048 01F0      		breq .L9
+ 370               	.LBB128:
+  94:Arduino-usbserial.c **** 
+ 371               		.loc 3 94 0
+ 372 004a 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 373 004c 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 374               	.LVL26:
+ 375 004e 0E94 0000 		call CDC_Device_ReceiveByte
+ 376               	.LVL27:
+  97:Arduino-usbserial.c **** 			  RingBuffer_Insert(&USBtoUSART_Buffer, ReceivedByte);
+ 377               		.loc 3 97 0
+ 378 0052 97FD      		sbrc r25,7
+ 379 0054 00C0      		rjmp .L9
+  98:Arduino-usbserial.c **** 		}
+ 380               		.loc 3 98 0
+ 381 0056 682F      		mov r22,r24
+ 382 0058 80E0      		ldi r24,lo8(USBtoUSART_Buffer)
+ 383 005a 90E0      		ldi r25,hi8(USBtoUSART_Buffer)
+ 384               	.LVL28:
+ 385 005c 0E94 0000 		call RingBuffer_Insert
+ 386               	.LVL29:
+ 387               	.L9:
+ 388               	.LBE128:
+ 389               	.LBB129:
+ 390               	.LBB130:
+ 391               	.LBB131:
+ 111:Lib/LightweightRingBuff.h **** 			{
+ 392               		.loc 1 111 0
+ 393 0060 8FB7      		in r24,__SREG__
+ 394               	.LVL30:
+ 395               	.LBB132:
+ 396               	.LBB133:
+  50:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     return 1;
+ 397               		.loc 2 50 0
+ 398               	/* #APP */
+ 399               	 ;  50 "c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h" 1
+ 400 0062 F894      		cli
+ 401               	 ;  0 "" 2
+ 402               	.LVL31:
+ 403               	/* #NOAPP */
+ 404               	.LBE133:
+ 405               	.LBE132:
+ 113:Lib/LightweightRingBuff.h **** 			}
+ 406               		.loc 1 113 0
+ 407 0064 C091 0000 		lds r28,USARTtoUSB_Buffer+132
+ 408               	.LVL32:
+ 409               	.LBB134:
+ 410               	.LBB135:
+  70:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 411               		.loc 2 70 0
+ 412 0068 8FBF      		out __SREG__,r24
+ 413               		.loc 2 71 0
+ 414               	.LBE135:
+ 415               	.LBE134:
+ 416               	.LBE131:
+ 417               	.LBE130:
+ 418               	.LBE129:
+ 103:Arduino-usbserial.c **** 		{
+ 419               		.loc 3 103 0
+ 420 006a A899      		sbic 0x15,0
+ 421 006c 00C0      		rjmp .L11
+ 103:Arduino-usbserial.c **** 		{
+ 422               		.loc 3 103 0 is_stmt 0 discriminator 1
+ 423 006e C136      		cpi r28,lo8(97)
+ 424 0070 00F0      		brlo .L12
+ 425               	.L11:
+ 105:Arduino-usbserial.c **** 
+ 426               		.loc 3 105 0 is_stmt 1
+ 427 0072 A89A      		sbi 0x15,0
+ 107:Arduino-usbserial.c **** 				LEDs_TurnOnLEDs(LEDMASK_TX);
+ 428               		.loc 3 107 0
+ 429 0074 8091 0000 		lds r24,USARTtoUSB_Buffer+132
+ 430               	.LVL33:
+ 431 0078 8823      		tst r24
+ 432 007a 01F0      		breq .L14
+ 433               	.LVL34:
+ 434               	.LBB136:
+ 435               	.LBB137:
+  71:./Board/LEDs.h **** 			}
+  72:./Board/LEDs.h **** 			
+  73:./Board/LEDs.h **** 			static inline void LEDs_TurnOnLEDs(const uint8_t LEDMask)
+  74:./Board/LEDs.h **** 			{
+  75:./Board/LEDs.h **** 				PORTD &= ~LEDMask;
+ 436               		.loc 6 75 0
+ 437 007c 5D98      		cbi 0xb,5
+ 438               	.LBE137:
+ 439               	.LBE136:
+ 109:Arduino-usbserial.c **** 			}
+ 440               		.loc 3 109 0
+ 441 007e D093 0000 		sts PulseMSRemaining,r29
+ 442               	.LVL35:
+ 443               	.L14:
+ 113:Arduino-usbserial.c **** 			  CDC_Device_SendByte(&VirtualSerial_CDC_Interface, RingBuffer_Remove(&USARTtoUSB_Buffer));
+ 444               		.loc 3 113 0
+ 445 0082 CC23      		tst r28
+ 446 0084 01F0      		breq .L34
+ 114:Arduino-usbserial.c **** 			  
+ 447               		.loc 3 114 0
+ 448 0086 80E0      		ldi r24,lo8(USARTtoUSB_Buffer)
+ 449 0088 90E0      		ldi r25,hi8(USARTtoUSB_Buffer)
+ 450 008a 0E94 0000 		call RingBuffer_Remove
+ 451               	.LVL36:
+ 452 008e 682F      		mov r22,r24
+ 453 0090 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 454 0092 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 455 0094 0E94 0000 		call CDC_Device_SendByte
+ 456               	.LVL37:
+ 457 0098 C150      		subi r28,lo8(-(-1))
+ 458               	.LVL38:
+ 459 009a 00C0      		rjmp .L14
+ 460               	.LVL39:
+ 461               	.L34:
+ 117:Arduino-usbserial.c **** 			  LEDs_TurnOffLEDs(LEDMASK_TX);
+ 462               		.loc 3 117 0
+ 463 009c 8091 0000 		lds r24,PulseMSRemaining
+ 464 00a0 8823      		tst r24
+ 465 00a2 01F0      		breq .L17
+ 117:Arduino-usbserial.c **** 			  LEDs_TurnOffLEDs(LEDMASK_TX);
+ 466               		.loc 3 117 0 is_stmt 0 discriminator 1
+ 467 00a4 8091 0000 		lds r24,PulseMSRemaining
+ 468 00a8 8150      		subi r24,lo8(-(-1))
+ 469 00aa 8093 0000 		sts PulseMSRemaining,r24
+ 470 00ae 8111      		cpse r24,__zero_reg__
+ 471 00b0 00C0      		rjmp .L17
+ 472               	.LVL40:
+ 473               	.LBB138:
+ 474               	.LBB139:
+  76:./Board/LEDs.h **** 			}
+  77:./Board/LEDs.h **** 
+  78:./Board/LEDs.h **** 			static inline void LEDs_TurnOffLEDs(const uint8_t LEDMask)
+  79:./Board/LEDs.h **** 			{
+  80:./Board/LEDs.h **** 				PORTD |= LEDMask;
+ 475               		.loc 6 80 0 is_stmt 1
+ 476 00b2 5D9A      		sbi 0xb,5
+ 477               	.LVL41:
+ 478               	.L17:
+ 479               	.LBE139:
+ 480               	.LBE138:
+ 121:Arduino-usbserial.c **** 			  LEDs_TurnOffLEDs(LEDMASK_RX);
+ 481               		.loc 3 121 0
+ 482 00b4 8091 0000 		lds r24,PulseMSRemaining+1
+ 483 00b8 8823      		tst r24
+ 484 00ba 01F0      		breq .L12
+ 121:Arduino-usbserial.c **** 			  LEDs_TurnOffLEDs(LEDMASK_RX);
+ 485               		.loc 3 121 0 is_stmt 0 discriminator 1
+ 486 00bc 8091 0000 		lds r24,PulseMSRemaining+1
+ 487 00c0 8150      		subi r24,lo8(-(-1))
+ 488 00c2 8093 0000 		sts PulseMSRemaining+1,r24
+ 489 00c6 8111      		cpse r24,__zero_reg__
+ 490 00c8 00C0      		rjmp .L12
+ 491               	.LVL42:
+ 492               	.LBB140:
+ 493               	.LBB141:
+ 494               		.loc 6 80 0 is_stmt 1
+ 495 00ca 5C9A      		sbi 0xb,4
+ 496               	.LVL43:
+ 497               	.L12:
+ 498               	.LBE141:
+ 499               	.LBE140:
+ 500               	.LBB142:
+ 501               	.LBB143:
+ 502               	.LBB144:
+ 503               	.LBB145:
+ 111:Lib/LightweightRingBuff.h **** 			{
+ 504               		.loc 1 111 0
+ 505 00cc 9FB7      		in r25,__SREG__
+ 506               	.LVL44:
+ 507               	.LBB146:
+ 508               	.LBB147:
+  50:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     return 1;
+ 509               		.loc 2 50 0
+ 510               	/* #APP */
+ 511               	 ;  50 "c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h" 1
+ 512 00ce F894      		cli
+ 513               	 ;  0 "" 2
+ 514               	.LVL45:
+ 515               	/* #NOAPP */
+ 516               	.LBE147:
+ 517               	.LBE146:
+ 113:Lib/LightweightRingBuff.h **** 			}
+ 518               		.loc 1 113 0
+ 519 00d0 8091 0000 		lds r24,USBtoUSART_Buffer+132
+ 520               	.LVL46:
+ 521               	.LBB148:
+ 522               	.LBB149:
+  70:c:\program files (x86)\arduino\hardware\tools\avr\avr\include\util\atomic.h ****     __asm__ volatile ("" ::: "memory");
+ 523               		.loc 2 70 0
+ 524 00d4 9FBF      		out __SREG__,r25
+ 525               		.loc 2 71 0
+ 526               	.LBE149:
+ 527               	.LBE148:
+ 528               	.LBE145:
+ 529               	.LBE144:
+ 530               	.LBE143:
+ 531               	.LBE142:
+ 126:Arduino-usbserial.c **** 		  Serial_TxByte(RingBuffer_Remove(&USBtoUSART_Buffer));
+ 532               		.loc 3 126 0
+ 533 00d6 8823      		tst r24
+ 534 00d8 01F0      		breq .L20
+ 127:Arduino-usbserial.c **** 		  	
+ 535               		.loc 3 127 0
+ 536 00da 80E0      		ldi r24,lo8(USBtoUSART_Buffer)
+ 537 00dc 90E0      		ldi r25,hi8(USBtoUSART_Buffer)
+ 538               	.LVL47:
+ 539 00de 0E94 0000 		call RingBuffer_Remove
+ 540               	.LVL48:
+ 541               	.L21:
+ 542               	.LBB150:
+ 543               	.LBB151:
+ 110:../../LUFA/Drivers/Peripheral/Serial.h **** 			}
+ 111:../../LUFA/Drivers/Peripheral/Serial.h **** 
+ 112:../../LUFA/Drivers/Peripheral/Serial.h **** 			/** Turns off the USART driver, disabling and returning used hardware to their default configura
+ 113:../../LUFA/Drivers/Peripheral/Serial.h **** 			static inline void Serial_ShutDown(void)
+ 114:../../LUFA/Drivers/Peripheral/Serial.h **** 			{
+ 115:../../LUFA/Drivers/Peripheral/Serial.h **** 				UCSR1B = 0;
+ 116:../../LUFA/Drivers/Peripheral/Serial.h **** 				UCSR1A = 0;
+ 117:../../LUFA/Drivers/Peripheral/Serial.h **** 				UCSR1C = 0;
+ 118:../../LUFA/Drivers/Peripheral/Serial.h **** 
+ 119:../../LUFA/Drivers/Peripheral/Serial.h **** 				UBRR1  = 0;
+ 120:../../LUFA/Drivers/Peripheral/Serial.h **** 				
+ 121:../../LUFA/Drivers/Peripheral/Serial.h **** 				DDRD  &= ~(1 << 3);
+ 122:../../LUFA/Drivers/Peripheral/Serial.h **** 				PORTD &= ~(1 << 2);
+ 123:../../LUFA/Drivers/Peripheral/Serial.h **** 			}
+ 124:../../LUFA/Drivers/Peripheral/Serial.h **** 
+ 125:../../LUFA/Drivers/Peripheral/Serial.h **** 			/** Indicates whether a character has been received through the USART.
+ 126:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *
+ 127:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *  \return Boolean true if a character has been received, false otherwise.
+ 128:../../LUFA/Drivers/Peripheral/Serial.h **** 			 */
+ 129:../../LUFA/Drivers/Peripheral/Serial.h **** 			static inline bool Serial_IsCharReceived(void) ATTR_WARN_UNUSED_RESULT ATTR_ALWAYS_INLINE;
+ 130:../../LUFA/Drivers/Peripheral/Serial.h **** 			static inline bool Serial_IsCharReceived(void)
+ 131:../../LUFA/Drivers/Peripheral/Serial.h **** 			{
+ 132:../../LUFA/Drivers/Peripheral/Serial.h **** 				return ((UCSR1A & (1 << RXC1)) ? true : false);
+ 133:../../LUFA/Drivers/Peripheral/Serial.h **** 			}
+ 134:../../LUFA/Drivers/Peripheral/Serial.h **** 			
+ 135:../../LUFA/Drivers/Peripheral/Serial.h **** 			/** Transmits a given byte through the USART.
+ 136:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *
+ 137:../../LUFA/Drivers/Peripheral/Serial.h **** 			 *  \param[in] DataByte  Byte to transmit through the USART.
+ 138:../../LUFA/Drivers/Peripheral/Serial.h **** 			 */
+ 139:../../LUFA/Drivers/Peripheral/Serial.h **** 			static inline void Serial_TxByte(const char DataByte) ATTR_ALWAYS_INLINE;
+ 140:../../LUFA/Drivers/Peripheral/Serial.h **** 			static inline void Serial_TxByte(const char DataByte)
+ 141:../../LUFA/Drivers/Peripheral/Serial.h **** 			{
+ 142:../../LUFA/Drivers/Peripheral/Serial.h **** 				while (!(UCSR1A & (1 << UDRE1)));
+ 544               		.loc 5 142 0
+ 545 00e2 9091 C800 		lds r25,200
+ 546 00e6 95FF      		sbrs r25,5
+ 547 00e8 00C0      		rjmp .L21
+ 143:../../LUFA/Drivers/Peripheral/Serial.h **** 				UDR1 = DataByte;
+ 548               		.loc 5 143 0
+ 549 00ea 8093 CE00 		sts 206,r24
+ 550               	.LVL49:
+ 551               	.LBE151:
+ 552               	.LBE150:
+ 553               	.LBB152:
+ 554               	.LBB153:
+  75:./Board/LEDs.h **** 			}
+ 555               		.loc 6 75 0
+ 556 00ee 5C98      		cbi 0xb,4
+ 557               	.LBE153:
+ 558               	.LBE152:
+ 130:Arduino-usbserial.c **** 		}
+ 559               		.loc 3 130 0
+ 560 00f0 D093 0000 		sts PulseMSRemaining+1,r29
+ 561               	.LVL50:
+ 562               	.L20:
+ 133:Arduino-usbserial.c **** 		USB_USBTask();
+ 563               		.loc 3 133 0
+ 564 00f4 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 565 00f6 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 566 00f8 0E94 0000 		call CDC_Device_USBTask
+ 567               	.LVL51:
+ 134:Arduino-usbserial.c **** 	}
+ 568               		.loc 3 134 0
+ 569 00fc 0E94 0000 		call USB_USBTask
+ 570               	.LVL52:
+ 571               	.LBE119:
+ 135:Arduino-usbserial.c **** }
+ 572               		.loc 3 135 0
+ 573 0100 00C0      		rjmp .L22
+ 574               		.cfi_endproc
+ 575               	.LFE89:
+ 577               		.section	.text.EVENT_USB_Device_ConfigurationChanged,"ax",@progbits
+ 578               	.global	EVENT_USB_Device_ConfigurationChanged
+ 580               	EVENT_USB_Device_ConfigurationChanged:
+ 581               	.LFB91:
+ 156:Arduino-usbserial.c **** }
+ 157:Arduino-usbserial.c **** 
+ 158:Arduino-usbserial.c **** /** Event handler for the library USB Configuration Changed event. */
+ 159:Arduino-usbserial.c **** void EVENT_USB_Device_ConfigurationChanged(void)
+ 160:Arduino-usbserial.c **** {
+ 582               		.loc 3 160 0
+ 583               		.cfi_startproc
+ 584               	/* prologue: function */
+ 585               	/* frame size = 0 */
+ 586               	/* stack size = 0 */
+ 587               	.L__stack_usage = 0
+ 161:Arduino-usbserial.c **** 	CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface);
+ 588               		.loc 3 161 0
+ 589 0000 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 590 0002 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 591 0004 0C94 0000 		jmp CDC_Device_ConfigureEndpoints
+ 592               	.LVL53:
+ 593               		.cfi_endproc
+ 594               	.LFE91:
+ 596               		.section	.text.EVENT_USB_Device_UnhandledControlRequest,"ax",@progbits
+ 597               	.global	EVENT_USB_Device_UnhandledControlRequest
+ 599               	EVENT_USB_Device_UnhandledControlRequest:
+ 600               	.LFB92:
+ 162:Arduino-usbserial.c **** }
+ 163:Arduino-usbserial.c **** 
+ 164:Arduino-usbserial.c **** /** Event handler for the library USB Unhandled Control Request event. */
+ 165:Arduino-usbserial.c **** void EVENT_USB_Device_UnhandledControlRequest(void)
+ 166:Arduino-usbserial.c **** {
+ 601               		.loc 3 166 0
+ 602               		.cfi_startproc
+ 603               	/* prologue: function */
+ 604               	/* frame size = 0 */
+ 605               	/* stack size = 0 */
+ 606               	.L__stack_usage = 0
+ 167:Arduino-usbserial.c **** 	CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
+ 607               		.loc 3 167 0
+ 608 0000 80E0      		ldi r24,lo8(VirtualSerial_CDC_Interface)
+ 609 0002 90E0      		ldi r25,hi8(VirtualSerial_CDC_Interface)
+ 610 0004 0C94 0000 		jmp CDC_Device_ProcessControlRequest
+ 611               	.LVL54:
+ 612               		.cfi_endproc
+ 613               	.LFE92:
+ 615               		.section	.text.EVENT_CDC_Device_LineEncodingChanged,"ax",@progbits
+ 616               	.global	EVENT_CDC_Device_LineEncodingChanged
+ 618               	EVENT_CDC_Device_LineEncodingChanged:
+ 619               	.LFB93:
+ 168:Arduino-usbserial.c **** }
+ 169:Arduino-usbserial.c **** 
+ 170:Arduino-usbserial.c **** /** Event handler for the CDC Class driver Line Encoding Changed event.
+ 171:Arduino-usbserial.c ****  *
+ 172:Arduino-usbserial.c ****  *  \param[in] CDCInterfaceInfo  Pointer to the CDC class interface configuration structure being r
+ 173:Arduino-usbserial.c ****  */
+ 174:Arduino-usbserial.c **** void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+ 175:Arduino-usbserial.c **** {
+ 620               		.loc 3 175 0
+ 621               		.cfi_startproc
+ 622               	.LVL55:
+ 623 0000 0F93      		push r16
+ 624               	.LCFI0:
+ 625               		.cfi_def_cfa_offset 3
+ 626               		.cfi_offset 16, -2
+ 627 0002 1F93      		push r17
+ 628               	.LCFI1:
+ 629               		.cfi_def_cfa_offset 4
+ 630               		.cfi_offset 17, -3
+ 631 0004 CF93      		push r28
+ 632               	.LCFI2:
+ 633               		.cfi_def_cfa_offset 5
+ 634               		.cfi_offset 28, -4
+ 635               	/* prologue: function */
+ 636               	/* frame size = 0 */
+ 637               	/* stack size = 3 */
+ 638               	.L__stack_usage = 3
+ 639 0006 8C01      		movw r16,r24
+ 640               	.LVL56:
+ 176:Arduino-usbserial.c **** 	uint8_t ConfigMask = 0;
+ 177:Arduino-usbserial.c **** 
+ 178:Arduino-usbserial.c **** 	switch (CDCInterfaceInfo->State.LineEncoding.ParityType)
+ 641               		.loc 3 178 0
+ 642 0008 FC01      		movw r30,r24
+ 643 000a 8489      		ldd r24,Z+20
+ 644               	.LVL57:
+ 645 000c 8130      		cpi r24,lo8(1)
+ 646 000e 01F0      		breq .L39
+ 647 0010 8230      		cpi r24,lo8(2)
+ 648 0012 01F4      		brne .L52
+ 649               	.LVL58:
+ 179:Arduino-usbserial.c **** 	{
+ 180:Arduino-usbserial.c **** 		case CDC_PARITY_Odd:
+ 181:Arduino-usbserial.c **** 			ConfigMask = ((1 << UPM11) | (1 << UPM10));		
+ 182:Arduino-usbserial.c **** 			break;
+ 183:Arduino-usbserial.c **** 		case CDC_PARITY_Even:
+ 184:Arduino-usbserial.c **** 			ConfigMask = (1 << UPM11);		
+ 650               		.loc 3 184 0
+ 651 0014 C0E2      		ldi r28,lo8(32)
+ 185:Arduino-usbserial.c **** 			break;
+ 652               		.loc 3 185 0
+ 653 0016 00C0      		rjmp .L38
+ 654               	.LVL59:
+ 655               	.L39:
+ 181:Arduino-usbserial.c **** 			break;
+ 656               		.loc 3 181 0
+ 657 0018 C0E3      		ldi r28,lo8(48)
+ 658 001a 00C0      		rjmp .L38
+ 659               	.L52:
+ 176:Arduino-usbserial.c **** 
+ 660               		.loc 3 176 0
+ 661 001c C0E0      		ldi r28,0
+ 662               	.LVL60:
+ 663               	.L38:
+ 186:Arduino-usbserial.c **** 	}
+ 187:Arduino-usbserial.c **** 
+ 188:Arduino-usbserial.c **** 	if (CDCInterfaceInfo->State.LineEncoding.CharFormat == CDC_LINEENCODING_TwoStopBits)
+ 664               		.loc 3 188 0
+ 665 001e F801      		movw r30,r16
+ 666 0020 8389      		ldd r24,Z+19
+ 667 0022 8230      		cpi r24,lo8(2)
+ 668 0024 01F4      		brne .L41
+ 189:Arduino-usbserial.c **** 	  ConfigMask |= (1 << USBS1);
+ 669               		.loc 3 189 0
+ 670 0026 C860      		ori r28,lo8(8)
+ 671               	.LVL61:
+ 672               	.L41:
+ 190:Arduino-usbserial.c **** 
+ 191:Arduino-usbserial.c **** 	switch (CDCInterfaceInfo->State.LineEncoding.DataBits)
+ 673               		.loc 3 191 0
+ 674 0028 F801      		movw r30,r16
+ 675 002a 8589      		ldd r24,Z+21
+ 676 002c 8730      		cpi r24,lo8(7)
+ 677 002e 01F0      		breq .L43
+ 678 0030 8830      		cpi r24,lo8(8)
+ 679 0032 01F0      		breq .L44
+ 680 0034 8630      		cpi r24,lo8(6)
+ 681 0036 01F4      		brne .L42
+ 192:Arduino-usbserial.c **** 	{
+ 193:Arduino-usbserial.c **** 		case 6:
+ 194:Arduino-usbserial.c **** 			ConfigMask |= (1 << UCSZ10);
+ 682               		.loc 3 194 0
+ 683 0038 C260      		ori r28,lo8(2)
+ 684               	.LVL62:
+ 195:Arduino-usbserial.c **** 			break;
+ 685               		.loc 3 195 0
+ 686 003a 00C0      		rjmp .L42
+ 687               	.L43:
+ 196:Arduino-usbserial.c **** 		case 7:
+ 197:Arduino-usbserial.c **** 			ConfigMask |= (1 << UCSZ11);
+ 688               		.loc 3 197 0
+ 689 003c C460      		ori r28,lo8(4)
+ 690               	.LVL63:
+ 198:Arduino-usbserial.c **** 			break;
+ 691               		.loc 3 198 0
+ 692 003e 00C0      		rjmp .L42
+ 693               	.L44:
+ 199:Arduino-usbserial.c **** 		case 8:
+ 200:Arduino-usbserial.c **** 			ConfigMask |= ((1 << UCSZ11) | (1 << UCSZ10));
+ 694               		.loc 3 200 0
+ 695 0040 C660      		ori r28,lo8(6)
+ 696               	.LVL64:
+ 697               	.L42:
+ 201:Arduino-usbserial.c **** 			break;
+ 202:Arduino-usbserial.c **** 	}
+ 203:Arduino-usbserial.c **** 
+ 204:Arduino-usbserial.c **** 	/* Must turn off USART before reconfiguring it, otherwise incorrect operation may occur */
+ 205:Arduino-usbserial.c **** 	UCSR1B = 0;
+ 698               		.loc 3 205 0
+ 699 0042 1092 C900 		sts 201,__zero_reg__
+ 206:Arduino-usbserial.c **** 	UCSR1A = 0;
+ 700               		.loc 3 206 0
+ 701 0046 1092 C800 		sts 200,__zero_reg__
+ 207:Arduino-usbserial.c **** 	UCSR1C = 0;
+ 702               		.loc 3 207 0
+ 703 004a 1092 CA00 		sts 202,__zero_reg__
+ 208:Arduino-usbserial.c **** 
+ 209:Arduino-usbserial.c **** 	/* Special case 57600 baud for compatibility with the ATmega328 bootloader. */	
+ 210:Arduino-usbserial.c **** 	UBRR1  = (CDCInterfaceInfo->State.LineEncoding.BaudRateBPS == 57600)
+ 704               		.loc 3 210 0
+ 705 004e F801      		movw r30,r16
+ 706 0050 2785      		ldd r18,Z+15
+ 707 0052 3089      		ldd r19,Z+16
+ 708 0054 4189      		ldd r20,Z+17
+ 709 0056 5289      		ldd r21,Z+18
+ 710 0058 2115      		cp r18,__zero_reg__
+ 711 005a F1EE      		ldi r31,-31
+ 712 005c 3F07      		cpc r19,r31
+ 713 005e 4105      		cpc r20,__zero_reg__
+ 714 0060 5105      		cpc r21,__zero_reg__
+ 715 0062 01F0      		breq .L49
+ 211:Arduino-usbserial.c **** 			 ? SERIAL_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS)
+ 212:Arduino-usbserial.c **** 			 : SERIAL_2X_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS);	
+ 716               		.loc 3 212 0 discriminator 2
+ 717 0064 DA01      		movw r26,r20
+ 718 0066 C901      		movw r24,r18
+ 719 0068 B695      		lsr r27
+ 720 006a A795      		ror r26
+ 721 006c 9795      		ror r25
+ 722 006e 8795      		ror r24
+ 723 0070 BC01      		movw r22,r24
+ 724 0072 CD01      		movw r24,r26
+ 725 0074 6058      		subi r22,-128
+ 726 0076 7B47      		sbci r23,123
+ 727 0078 814E      		sbci r24,-31
+ 728 007a 9F4F      		sbci r25,-1
+ 729 007c 0E94 0000 		call __udivmodsi4
+ 210:Arduino-usbserial.c **** 			 ? SERIAL_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS)
+ 730               		.loc 3 210 0 discriminator 2
+ 731 0080 2150      		subi r18,1
+ 732 0082 3109      		sbc r19,__zero_reg__
+ 733 0084 00C0      		rjmp .L46
+ 734               	.L49:
+ 210:Arduino-usbserial.c **** 			 ? SERIAL_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS)
+ 735               		.loc 3 210 0 is_stmt 0
+ 736 0086 20E1      		ldi r18,lo8(16)
+ 737 0088 30E0      		ldi r19,0
+ 738               	.L46:
+ 210:Arduino-usbserial.c **** 			 ? SERIAL_UBBRVAL(CDCInterfaceInfo->State.LineEncoding.BaudRateBPS)
+ 739               		.loc 3 210 0 discriminator 4
+ 740 008a 3093 CD00 		sts 204+1,r19
+ 741 008e 2093 CC00 		sts 204,r18
+ 213:Arduino-usbserial.c **** 
+ 214:Arduino-usbserial.c **** 	UCSR1C = ConfigMask;
+ 742               		.loc 3 214 0 is_stmt 1 discriminator 4
+ 743 0092 C093 CA00 		sts 202,r28
+ 215:Arduino-usbserial.c **** 	UCSR1A = (CDCInterfaceInfo->State.LineEncoding.BaudRateBPS == 57600) ? 0 : (1 << U2X1);
+ 744               		.loc 3 215 0 discriminator 4
+ 745 0096 F801      		movw r30,r16
+ 746 0098 8785      		ldd r24,Z+15
+ 747 009a 9089      		ldd r25,Z+16
+ 748 009c A189      		ldd r26,Z+17
+ 749 009e B289      		ldd r27,Z+18
+ 750 00a0 8115      		cp r24,__zero_reg__
+ 751 00a2 914E      		sbci r25,-31
+ 752 00a4 A105      		cpc r26,__zero_reg__
+ 753 00a6 B105      		cpc r27,__zero_reg__
+ 754 00a8 01F0      		breq .L50
+ 755               		.loc 3 215 0 is_stmt 0
+ 756 00aa 82E0      		ldi r24,lo8(2)
+ 757 00ac 00C0      		rjmp .L47
+ 758               	.L50:
+ 759 00ae 80E0      		ldi r24,0
+ 760               	.L47:
+ 761               		.loc 3 215 0 discriminator 4
+ 762 00b0 8093 C800 		sts 200,r24
+ 216:Arduino-usbserial.c **** 	UCSR1B = ((1 << RXCIE1) | (1 << TXEN1) | (1 << RXEN1));
+ 763               		.loc 3 216 0 is_stmt 1 discriminator 4
+ 764 00b4 88E9      		ldi r24,lo8(-104)
+ 765 00b6 8093 C900 		sts 201,r24
+ 766               	/* epilogue start */
+ 217:Arduino-usbserial.c **** }
+ 767               		.loc 3 217 0 discriminator 4
+ 768 00ba CF91      		pop r28
+ 769               	.LVL65:
+ 770 00bc 1F91      		pop r17
+ 771 00be 0F91      		pop r16
+ 772               	.LVL66:
+ 773 00c0 0895      		ret
+ 774               		.cfi_endproc
+ 775               	.LFE93:
+ 777               		.section	.text.__vector_23,"ax",@progbits
+ 778               	.global	__vector_23
+ 780               	__vector_23:
+ 781               	.LFB94:
+ 218:Arduino-usbserial.c **** 
+ 219:Arduino-usbserial.c **** /** ISR to manage the reception of data from the serial port, placing received bytes into a circula
+ 220:Arduino-usbserial.c ****  *  for later transmission to the host.
+ 221:Arduino-usbserial.c ****  */
+ 222:Arduino-usbserial.c **** ISR(USART1_RX_vect, ISR_BLOCK)
+ 223:Arduino-usbserial.c **** {
+ 782               		.loc 3 223 0
+ 783               		.cfi_startproc
+ 784 0000 1F92      		push r1
+ 785               	.LCFI3:
+ 786               		.cfi_def_cfa_offset 3
+ 787               		.cfi_offset 1, -2
+ 788 0002 0F92      		push r0
+ 789               	.LCFI4:
+ 790               		.cfi_def_cfa_offset 4
+ 791               		.cfi_offset 0, -3
+ 792 0004 0FB6      		in r0,__SREG__
+ 793 0006 0F92      		push r0
+ 794 0008 1124      		clr __zero_reg__
+ 795 000a 2F93      		push r18
+ 796               	.LCFI5:
+ 797               		.cfi_def_cfa_offset 5
+ 798               		.cfi_offset 18, -4
+ 799 000c 3F93      		push r19
+ 800               	.LCFI6:
+ 801               		.cfi_def_cfa_offset 6
+ 802               		.cfi_offset 19, -5
+ 803 000e 4F93      		push r20
+ 804               	.LCFI7:
+ 805               		.cfi_def_cfa_offset 7
+ 806               		.cfi_offset 20, -6
+ 807 0010 5F93      		push r21
+ 808               	.LCFI8:
+ 809               		.cfi_def_cfa_offset 8
+ 810               		.cfi_offset 21, -7
+ 811 0012 6F93      		push r22
+ 812               	.LCFI9:
+ 813               		.cfi_def_cfa_offset 9
+ 814               		.cfi_offset 22, -8
+ 815 0014 7F93      		push r23
+ 816               	.LCFI10:
+ 817               		.cfi_def_cfa_offset 10
+ 818               		.cfi_offset 23, -9
+ 819 0016 8F93      		push r24
+ 820               	.LCFI11:
+ 821               		.cfi_def_cfa_offset 11
+ 822               		.cfi_offset 24, -10
+ 823 0018 9F93      		push r25
+ 824               	.LCFI12:
+ 825               		.cfi_def_cfa_offset 12
+ 826               		.cfi_offset 25, -11
+ 827 001a AF93      		push r26
+ 828               	.LCFI13:
+ 829               		.cfi_def_cfa_offset 13
+ 830               		.cfi_offset 26, -12
+ 831 001c BF93      		push r27
+ 832               	.LCFI14:
+ 833               		.cfi_def_cfa_offset 14
+ 834               		.cfi_offset 27, -13
+ 835 001e EF93      		push r30
+ 836               	.LCFI15:
+ 837               		.cfi_def_cfa_offset 15
+ 838               		.cfi_offset 30, -14
+ 839 0020 FF93      		push r31
+ 840               	.LCFI16:
+ 841               		.cfi_def_cfa_offset 16
+ 842               		.cfi_offset 31, -15
+ 843               	/* prologue: Signal */
+ 844               	/* frame size = 0 */
+ 845               	/* stack size = 15 */
+ 846               	.L__stack_usage = 15
+ 224:Arduino-usbserial.c **** 	uint8_t ReceivedByte = UDR1;
+ 847               		.loc 3 224 0
+ 848 0022 6091 CE00 		lds r22,206
+ 849               	.LVL67:
+ 225:Arduino-usbserial.c **** 
+ 226:Arduino-usbserial.c **** 	if (USB_DeviceState == DEVICE_STATE_Configured)
+ 850               		.loc 3 226 0
+ 851 0026 8EB3      		in r24,0x1e
+ 852 0028 8430      		cpi r24,lo8(4)
+ 853 002a 01F4      		brne .L53
+ 227:Arduino-usbserial.c **** 	  RingBuffer_Insert(&USARTtoUSB_Buffer, ReceivedByte);
+ 854               		.loc 3 227 0
+ 855 002c 80E0      		ldi r24,lo8(USARTtoUSB_Buffer)
+ 856 002e 90E0      		ldi r25,hi8(USARTtoUSB_Buffer)
+ 857 0030 0E94 0000 		call RingBuffer_Insert
+ 858               	.LVL68:
+ 859               	.L53:
+ 860               	/* epilogue start */
+ 228:Arduino-usbserial.c **** }
+ 861               		.loc 3 228 0
+ 862 0034 FF91      		pop r31
+ 863 0036 EF91      		pop r30
+ 864 0038 BF91      		pop r27
+ 865 003a AF91      		pop r26
+ 866 003c 9F91      		pop r25
+ 867 003e 8F91      		pop r24
+ 868 0040 7F91      		pop r23
+ 869 0042 6F91      		pop r22
+ 870 0044 5F91      		pop r21
+ 871 0046 4F91      		pop r20
+ 872 0048 3F91      		pop r19
+ 873 004a 2F91      		pop r18
+ 874 004c 0F90      		pop r0
+ 875 004e 0FBE      		out __SREG__,r0
+ 876 0050 0F90      		pop r0
+ 877 0052 1F90      		pop r1
+ 878 0054 1895      		reti
+ 879               		.cfi_endproc
+ 880               	.LFE94:
+ 882               		.section	.text.EVENT_CDC_Device_ControLineStateChanged,"ax",@progbits
+ 883               	.global	EVENT_CDC_Device_ControLineStateChanged
+ 885               	EVENT_CDC_Device_ControLineStateChanged:
+ 886               	.LFB95:
+ 229:Arduino-usbserial.c **** 
+ 230:Arduino-usbserial.c **** /** Event handler for the CDC Class driver Host-to-Device Line Encoding Changed event.
+ 231:Arduino-usbserial.c ****  *
+ 232:Arduino-usbserial.c ****  *  \param[in] CDCInterfaceInfo  Pointer to the CDC class interface configuration structure being r
+ 233:Arduino-usbserial.c ****  */
+ 234:Arduino-usbserial.c **** void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
+ 235:Arduino-usbserial.c **** {
+ 887               		.loc 3 235 0
+ 888               		.cfi_startproc
+ 889               	.LVL69:
+ 890               	/* prologue: function */
+ 891               	/* frame size = 0 */
+ 892               	/* stack size = 0 */
+ 893               	.L__stack_usage = 0
+ 236:Arduino-usbserial.c **** 	bool CurrentDTRState = (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_
+ 894               		.loc 3 236 0
+ 895 0000 FC01      		movw r30,r24
+ 896 0002 8585      		ldd r24,Z+13
+ 897               	.LVL70:
+ 237:Arduino-usbserial.c **** 
+ 238:Arduino-usbserial.c **** 	if (CurrentDTRState)
+ 898               		.loc 3 238 0
+ 899 0004 80FF      		sbrs r24,0
+ 900 0006 00C0      		rjmp .L56
+ 239:Arduino-usbserial.c **** 	  AVR_RESET_LINE_PORT &= ~AVR_RESET_LINE_MASK;
+ 901               		.loc 3 239 0
+ 902 0008 5F98      		cbi 0xb,7
+ 903 000a 0895      		ret
+ 904               	.L56:
+ 240:Arduino-usbserial.c **** 	else
+ 241:Arduino-usbserial.c **** 	  AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
+ 905               		.loc 3 241 0
+ 906 000c 5F9A      		sbi 0xb,7
+ 907 000e 0895      		ret
+ 908               		.cfi_endproc
+ 909               	.LFE95:
+ 911               	.global	VirtualSerial_CDC_Interface
+ 912               		.data
+ 915               	VirtualSerial_CDC_Interface:
+ 916 0000 00        		.byte	0
+ 917 0001 03        		.byte	3
+ 918 0002 4000      		.word	64
+ 919 0004 00        		.byte	0
+ 920 0005 04        		.byte	4
+ 921 0006 4000      		.word	64
+ 922 0008 00        		.byte	0
+ 923 0009 02        		.byte	2
+ 924 000a 0800      		.word	8
+ 925 000c 00        		.byte	0
+ 926 000d 0000 0000 		.zero	9
+ 926      0000 0000 
+ 926      00
+ 927               		.comm	PulseMSRemaining,3,1
+ 928               		.comm	USARTtoUSB_Buffer,133,1
+ 929               		.comm	USBtoUSART_Buffer,133,1
+ 930               		.text
+ 931               	.Letext0:
+ 932               		.file 7 "c:\\program files (x86)\\arduino\\hardware\\tools\\avr\\avr\\include\\stdint.h"
+ 933               		.file 8 "../../LUFA/Drivers/USB/HighLevel/../LowLevel/Device.h"
+ 934               		.file 9 "../../LUFA/Drivers/USB/Class/Device/../Common/CDC.h"
+ 935               		.file 10 "../../LUFA/Drivers/USB/Class/Device/CDC.h"
+ 936               		.file 11 "../../LUFA/Drivers/USB/HighLevel/../LowLevel/USBController.h"
+ 937               		.file 12 "../../LUFA/Drivers/USB/HighLevel/USBTask.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 Arduino-usbserial.c
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:2      *ABS*:0000003e __SP_H__
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:3      *ABS*:0000003d __SP_L__
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:4      *ABS*:0000003f __SREG__
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:5      *ABS*:00000000 __tmp_reg__
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:6      *ABS*:00000001 __zero_reg__
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:12     .text.RingBuffer_Insert:00000000 RingBuffer_Insert
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:85     .text.RingBuffer_Remove:00000000 RingBuffer_Remove
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:158    .text.SetupHardware:00000000 SetupHardware
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:243    .text.startup.main:00000000 main
+                            *COM*:00000085 USBtoUSART_Buffer
+                            *COM*:00000085 USARTtoUSB_Buffer
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:915    .data:00000000 VirtualSerial_CDC_Interface
+                            *COM*:00000003 PulseMSRemaining
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:580    .text.EVENT_USB_Device_ConfigurationChanged:00000000 EVENT_USB_Device_ConfigurationChanged
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:599    .text.EVENT_USB_Device_UnhandledControlRequest:00000000 EVENT_USB_Device_UnhandledControlRequest
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:618    .text.EVENT_CDC_Device_LineEncodingChanged:00000000 EVENT_CDC_Device_LineEncodingChanged
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:780    .text.__vector_23:00000000 __vector_23
+C:\Users\Julien\AppData\Local\Temp\cczkP4pC.s:885    .text.EVENT_CDC_Device_ControLineStateChanged:00000000 EVENT_CDC_Device_ControLineStateChanged
+
+UNDEFINED SYMBOLS
+USB_Init
+CDC_Device_ReceiveByte
+CDC_Device_SendByte
+CDC_Device_USBTask
+USB_USBTask
+CDC_Device_ConfigureEndpoints
+CDC_Device_ProcessControlRequest
+__udivmodsi4
+__do_copy_data
+__do_clear_bss

@@ -1,0 +1,1315 @@
+Archive member included to satisfy reference by file (symbol)
+
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+                              Arduino-usbserial.o (__udivmodsi4)
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+                              c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o (exit)
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+                              ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o (__tablejump2__)
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+                              Arduino-usbserial.o (__do_copy_data)
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+                              Arduino-usbserial.o (__do_clear_bss)
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy_P.o)
+                              ../../LUFA/Drivers/USB/Class/Device/RNDIS.o (memcpy_P)
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcmp.o)
+                              ../../LUFA/Drivers/USB/Class/Device/HID.o (memcmp)
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy.o)
+                              ../../LUFA/Drivers/USB/Class/Device/HID.o (memcpy)
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memset.o)
+                              ../../LUFA/Drivers/USB/Class/Device/HID.o (memset)
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eerd_byte.o)
+                              ../../LUFA/Drivers/USB/LowLevel/Endpoint.o (eeprom_read_byte)
+c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eeupd_byte.o)
+                              ../../LUFA/Drivers/USB/LowLevel/Endpoint.o (eeprom_update_byte)
+
+Allocating common symbols
+Common symbol       size              file
+
+USB_IsInitialized   0x1               ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+USB_CurrentlySelfPowered
+                    0x1               ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+USB_RemoteWakeupEnabled
+                    0x1               ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+PulseMSRemaining    0x3               Arduino-usbserial.o
+USB_ControlRequest  0x8               ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+USB_ConfigurationNumber
+                    0x1               ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+USARTtoUSB_Buffer   0x85              Arduino-usbserial.o
+USBtoUSART_Buffer   0x85              Arduino-usbserial.o
+
+Discarded input sections
+
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+ .text          0x00000000        0x0 Arduino-usbserial.o
+ .bss           0x00000000        0x0 Arduino-usbserial.o
+ .text          0x00000000        0x0 Descriptors.o
+ .bss           0x00000000        0x0 Descriptors.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .text.USB_Device_SendRemoteWakeup
+                0x00000000       0x2e ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Discard_Stream
+                0x00000000       0x50 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Write_Stream_LE
+                0x00000000       0x62 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Write_PStream_LE
+                0x00000000       0x68 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Write_EStream_LE
+                0x00000000       0x72 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Write_Stream_BE
+                0x00000000       0x76 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Write_EStream_BE
+                0x00000000       0x8a ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Write_PStream_BE
+                0x00000000       0x7c ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Read_Stream_LE
+                0x00000000       0x62 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Read_EStream_LE
+                0x00000000       0x72 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Read_Stream_BE
+                0x00000000       0x76 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Read_EStream_BE
+                0x00000000       0x8a ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Write_Control_EStream_LE
+                0x00000000       0xc6 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Write_Control_Stream_BE
+                0x00000000       0xb8 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Write_Control_PStream_BE
+                0x00000000       0xb8 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Write_Control_EStream_BE
+                0x00000000       0xf2 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Read_Control_EStream_LE
+                0x00000000       0x84 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Read_Control_Stream_BE
+                0x00000000       0x7c ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text.Endpoint_Read_Control_EStream_BE
+                0x00000000       0x8a ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/Host.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/Host.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/Pipe.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/Pipe.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .text.USB_ShutDown
+                0x00000000       0x32 ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .text.USB_GetNextDescriptorOfType
+                0x00000000       0x42 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .text.USB_GetNextDescriptorOfTypeBefore
+                0x00000000       0x48 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .text.USB_GetNextDescriptorOfTypeAfter
+                0x00000000       0x3e ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .text.USB_GetNextDescriptorComp
+                0x00000000       0x7e ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/HighLevel/Events.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/HighLevel/Events.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/HighLevel/HostStandardReq.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/HighLevel/HostStandardReq.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/HIDParser.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/HIDParser.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .text.Audio_Device_ProcessControlRequest
+                0x00000000       0x48 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .text.Audio_Device_ConfigureEndpoints
+                0x00000000       0x56 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .text.CDC_Device_SendString
+                0x00000000       0x3a ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .text.CDC_Device_putchar
+                0x00000000       0x22 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .text.CDC_Device_BytesReceived
+                0x00000000       0x46 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .text.CDC_Device_getchar
+                0x00000000       0x14 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .text.CDC_Device_getchar_Blocking
+                0x00000000       0x30 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .rodata        0x00000000        0x8 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .text.CDC_Device_SendControlLineStateChange
+                0x00000000       0x8a ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .text.CDC_Device_CreateStream
+                0x00000000       0x26 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .text.CDC_Device_CreateBlockingStream
+                0x00000000       0x26 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .text.HID_Device_ProcessControlRequest
+                0x00000000      0x244 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .text.HID_Device_ConfigureEndpoints
+                0x00000000       0x48 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .text.HID_Device_USBTask
+                0x00000000      0x166 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .bss           0x00000000        0x2 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .text.StreamCallback_MS_Device_AbortOnMassStoreReset
+                0x00000000        0xc ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .text.MS_Device_ProcessControlRequest
+                0x00000000       0x6a ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .text.MS_Device_ConfigureEndpoints
+                0x00000000       0x78 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .text.MS_Device_USBTask
+                0x00000000      0x1d6 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .text.MIDI_Device_ConfigureEndpoints
+                0x00000000       0x76 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .text.MIDI_Device_SendEventPacket
+                0x00000000       0x48 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .text.MIDI_Device_Flush
+                0x00000000       0x28 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .text.MIDI_Device_ReceiveEventPacket
+                0x00000000       0x3e ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+ .text.RNDIS_Device_ProcessControlRequest
+                0x00000000      0x4f4 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+ .text.RNDIS_Device_ConfigureEndpoints
+                0x00000000       0xa6 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+ .rodata        0x00000000        0x8 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+ .text.RNDIS_Device_USBTask
+                0x00000000      0x1e8 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+ .progmem.data  0x00000000       0x6c ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/CDC.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/CDC.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/HID.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/HID.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/MassStorage.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/MassStorage.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/MIDI.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/MIDI.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/Printer.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/Printer.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/RNDIS.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/RNDIS.o
+ .text          0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/StillImage.o
+ .bss           0x00000000        0x0 ../../LUFA/Drivers/USB/Class/Host/StillImage.o
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+ .text.libgcc.mul
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+ .text.libgcc   0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+ .text.libgcc.prologue
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+ .text.libgcc.builtins
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+ .text.libgcc.fmul
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+ .text.libgcc.fixed
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ .text.libgcc.mul
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ .text.libgcc.div
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ .text.libgcc   0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ .text.libgcc.prologue
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ .text.libgcc.builtins
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ .text.libgcc.fmul
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ .text.libgcc.fixed
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+ .text.libgcc.mul
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+ .text.libgcc.div
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+ .text.libgcc.prologue
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+ .text.libgcc.builtins
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+ .text.libgcc.fmul
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+ .text.libgcc.fixed
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+ .text.libgcc.mul
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+ .text.libgcc.div
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+ .text.libgcc   0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+ .text.libgcc.prologue
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+ .text.libgcc.builtins
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+ .text.libgcc.fmul
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+ .text.libgcc.fixed
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+ .text.libgcc.mul
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+ .text.libgcc.div
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+ .text.libgcc   0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+ .text.libgcc.prologue
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+ .text.libgcc.builtins
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+ .text.libgcc.fmul
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+ .text.libgcc.fixed
+                0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy_P.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy_P.o)
+ .text.avr-libc
+                0x00000000       0x12 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy_P.o)
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcmp.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcmp.o)
+ .text.avr-libc
+                0x00000000       0x1a c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcmp.o)
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy.o)
+ .text.avr-libc
+                0x00000000       0x12 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy.o)
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memset.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memset.o)
+ .text.avr-libc
+                0x00000000        0xe c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memset.o)
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eerd_byte.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eerd_byte.o)
+ .text.avr-libc
+                0x00000000       0x10 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eerd_byte.o)
+ .text          0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eeupd_byte.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eeupd_byte.o)
+ .text.avr-libc
+                0x00000000       0x24 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eeupd_byte.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x00000000         0x00010000         xr
+data             0x00800060         0x0000ffa0         rw !x
+eeprom           0x00810000         0x00010000         rw !x
+fuse             0x00820000         0x00000400         rw !x
+lock             0x00830000         0x00000400         rw !x
+signature        0x00840000         0x00000400         rw !x
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+Address of section .data set to 0x800100
+LOAD c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+LOAD Arduino-usbserial.o
+LOAD Descriptors.o
+LOAD ../../LUFA/Drivers/USB/LowLevel/Device.o
+LOAD ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+LOAD ../../LUFA/Drivers/USB/LowLevel/Host.o
+LOAD ../../LUFA/Drivers/USB/LowLevel/Pipe.o
+LOAD ../../LUFA/Drivers/USB/LowLevel/USBController.o
+LOAD ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+LOAD ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+LOAD ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+LOAD ../../LUFA/Drivers/USB/HighLevel/Events.o
+LOAD ../../LUFA/Drivers/USB/HighLevel/HostStandardReq.o
+LOAD ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+LOAD ../../LUFA/Drivers/USB/Class/Host/HIDParser.o
+LOAD ../../LUFA/Drivers/USB/Class/Device/Audio.o
+LOAD ../../LUFA/Drivers/USB/Class/Device/CDC.o
+LOAD ../../LUFA/Drivers/USB/Class/Device/HID.o
+LOAD ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+LOAD ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+LOAD ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+LOAD ../../LUFA/Drivers/USB/Class/Host/CDC.o
+LOAD ../../LUFA/Drivers/USB/Class/Host/HID.o
+LOAD ../../LUFA/Drivers/USB/Class/Host/MassStorage.o
+LOAD ../../LUFA/Drivers/USB/Class/Host/MIDI.o
+LOAD ../../LUFA/Drivers/USB/Class/Host/Printer.o
+LOAD ../../LUFA/Drivers/USB/Class/Host/RNDIS.o
+LOAD ../../LUFA/Drivers/USB/Class/Host/StillImage.o
+LOAD c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libm.a
+START GROUP
+LOAD c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a
+LOAD c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libm.a
+LOAD c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a
+LOAD c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a
+END GROUP
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x00000000      0xf4c
+ *(.vectors)
+ .vectors       0x00000000       0x74 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+                0x00000000                __vector_default
+                0x00000000                __vectors
+ *(.vectors)
+ *(.progmem.gcc*)
+ .progmem.gcc_sw_table.USB_Device_ProcessControlRequest
+                0x00000074       0x14 ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+                0x00000088                . = ALIGN (0x2)
+                0x00000088                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x00000088        0x0 linker stubs
+ *(.trampolines*)
+                0x00000088                __trampolines_end = .
+ *(.progmem*)
+ .progmem.data  0x00000088       0xa2 Descriptors.o
+                0x00000088                ProductString
+                0x000000a2                ManufacturerString
+                0x000000d6                LanguageString
+                0x000000da                ConfigurationDescriptor
+                0x00000118                DeviceDescriptor
+                0x0000012a                . = ALIGN (0x2)
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x0000012a                __ctors_start = .
+ *(.ctors)
+                0x0000012a                __ctors_end = .
+                0x0000012a                __dtors_start = .
+ *(.dtors)
+                0x0000012a                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x0000012a        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+                0x0000012a                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x0000012a        0xc c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x00000136       0x16 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+                0x00000136                __do_copy_data
+ .init4         0x0000014c       0x10 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+                0x0000014c                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x0000015c        0x4 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+ *(.init9)
+ *(.text)
+ .text          0x00000160        0x2 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+                0x00000160                __vector_22
+                0x00000160                __vector_28
+                0x00000160                __vector_1
+                0x00000160                __vector_24
+                0x00000160                __bad_interrupt
+                0x00000160                __vector_6
+                0x00000160                __vector_3
+                0x00000160                __vector_25
+                0x00000160                __vector_13
+                0x00000160                __vector_17
+                0x00000160                __vector_19
+                0x00000160                __vector_7
+                0x00000160                __vector_27
+                0x00000160                __vector_5
+                0x00000160                __vector_4
+                0x00000160                __vector_9
+                0x00000160                __vector_2
+                0x00000160                __vector_21
+                0x00000160                __vector_15
+                0x00000160                __vector_8
+                0x00000160                __vector_26
+                0x00000160                __vector_14
+                0x00000160                __vector_10
+                0x00000160                __vector_16
+                0x00000160                __vector_18
+                0x00000160                __vector_20
+                0x00000162                . = ALIGN (0x2)
+ *(.text.*)
+ .text.RingBuffer_Insert
+                0x00000162       0x3c Arduino-usbserial.o
+ .text.RingBuffer_Remove
+                0x0000019e       0x3a Arduino-usbserial.o
+ .text.SetupHardware
+                0x000001d8       0x54 Arduino-usbserial.o
+                0x000001d8                SetupHardware
+ .text.startup.main
+                0x0000022c       0xf2 Arduino-usbserial.o
+                0x0000022c                main
+ .text.EVENT_USB_Device_ConfigurationChanged
+                0x0000031e        0x6 Arduino-usbserial.o
+                0x0000031e                EVENT_USB_Device_ConfigurationChanged
+ .text.EVENT_USB_Device_UnhandledControlRequest
+                0x00000324        0x6 Arduino-usbserial.o
+                0x00000324                EVENT_USB_Device_UnhandledControlRequest
+ .text.EVENT_CDC_Device_LineEncodingChanged
+                0x0000032a       0xc0 Arduino-usbserial.o
+                0x0000032a                EVENT_CDC_Device_LineEncodingChanged
+ .text.__vector_23
+                0x000003ea       0x54 Arduino-usbserial.o
+                0x000003ea                __vector_23
+ .text.EVENT_CDC_Device_ControLineStateChanged
+                0x0000043e       0x10 Arduino-usbserial.o
+                0x0000043e                EVENT_CDC_Device_ControLineStateChanged
+ .text.CALLBACK_USB_GetDescriptor
+                0x0000044e       0x64 Descriptors.o
+                0x0000044e                CALLBACK_USB_GetDescriptor
+ .text.Endpoint_BytesToEPSizeMaskDynamic
+                0x000004b2       0x1c ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                0x000004b2                Endpoint_BytesToEPSizeMaskDynamic
+ .text.Endpoint_ConfigureEndpoint_Prv
+                0x000004ce       0x26 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                0x000004ce                Endpoint_ConfigureEndpoint_Prv
+ .text.Endpoint_ClearEndpoints
+                0x000004f4       0x28 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                0x000004f4                Endpoint_ClearEndpoints
+ .text.Endpoint_ClearStatusStage
+                0x0000051c       0x3a ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                0x0000051c                Endpoint_ClearStatusStage
+ .text.Endpoint_WaitUntilReady
+                0x00000556       0x5a ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                0x00000556                Endpoint_WaitUntilReady
+ .text.Endpoint_Write_Control_Stream_LE
+                0x000005b0       0xac ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                0x000005b0                Endpoint_Write_Control_Stream_LE
+ .text.Endpoint_Write_Control_PStream_LE
+                0x0000065c       0xae ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                0x0000065c                Endpoint_Write_Control_PStream_LE
+ .text.Endpoint_Read_Control_Stream_LE
+                0x0000070a       0x72 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                0x0000070a                Endpoint_Read_Control_Stream_LE
+ .text.USB_ResetInterface
+                0x0000077c       0x7c ../../LUFA/Drivers/USB/LowLevel/USBController.o
+                0x0000077c                USB_ResetInterface
+ .text.USB_Init
+                0x000007f8        0xa ../../LUFA/Drivers/USB/LowLevel/USBController.o
+                0x000007f8                USB_Init
+ .text.USB_INT_DisableAllInterrupts
+                0x00000802        0x6 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+                0x00000802                USB_INT_DisableAllInterrupts
+ .text.USB_INT_ClearAllInterrupts
+                0x00000808        0x6 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+                0x00000808                USB_INT_ClearAllInterrupts
+ .text.__vector_11
+                0x0000080e      0x14e ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+                0x0000080e                __vector_11
+ .text.__vector_12
+                0x0000095c       0x82 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+                0x0000095c                __vector_12
+ .text.USB_Device_ProcessControlRequest
+                0x000009de      0x278 ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+                0x000009de                USB_Device_ProcessControlRequest
+ .text.USB_Event_Stub
+                0x00000c56        0x2 ../../LUFA/Drivers/USB/HighLevel/Events.o
+                0x00000c56                EVENT_USB_Device_WakeUp
+                0x00000c56                USB_Event_Stub
+                0x00000c56                EVENT_USB_Device_Suspend
+                0x00000c56                EVENT_USB_Device_StartOfFrame
+                0x00000c56                EVENT_USB_Device_Disconnect
+                0x00000c56                EVENT_USB_Device_Reset
+                0x00000c56                EVENT_USB_Device_Connect
+ .text.USB_USBTask
+                0x00000c58       0x22 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+                0x00000c58                USB_USBTask
+ .text.CDC_Device_Event_Stub
+                0x00000c7a        0x2 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                0x00000c7a                CDC_Device_Event_Stub
+                0x00000c7a                EVENT_CDC_Device_BreakSent
+ .text.CDC_Device_ProcessControlRequest
+                0x00000c7c       0xd4 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                0x00000c7c                CDC_Device_ProcessControlRequest
+ .text.CDC_Device_ConfigureEndpoints
+                0x00000d50       0x94 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                0x00000d50                CDC_Device_ConfigureEndpoints
+ .text.CDC_Device_SendByte
+                0x00000de4       0x52 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                0x00000de4                CDC_Device_SendByte
+ .text.CDC_Device_Flush
+                0x00000e36       0x50 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                0x00000e36                CDC_Device_Flush
+ .text.CDC_Device_USBTask
+                0x00000e86       0x1c ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                0x00000e86                CDC_Device_USBTask
+ .text.CDC_Device_ReceiveByte
+                0x00000ea2       0x56 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                0x00000ea2                CDC_Device_ReceiveByte
+ .text.libgcc.div
+                0x00000ef8       0x44 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+                0x00000ef8                __udivmodsi4
+ .text.libgcc   0x00000f3c        0xc c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+                0x00000f3c                __tablejump2__
+                0x00000f48                . = ALIGN (0x2)
+ *(.fini9)
+ .fini9         0x00000f48        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+                0x00000f48                _exit
+                0x00000f48                exit
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ .fini0         0x00000f48        0x4 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ *(.fini0)
+                0x00000f4c                _etext = .
+
+.data           0x00800100       0x16 load address 0x00000f4c
+                0x00800100                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x00800100        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+ .data          0x00800100       0x16 Arduino-usbserial.o
+                0x00800100                VirtualSerial_CDC_Interface
+ .data          0x00800116        0x0 Descriptors.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/LowLevel/Host.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/LowLevel/Pipe.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/HighLevel/Events.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/HighLevel/HostStandardReq.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Host/HIDParser.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Host/CDC.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Host/HID.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Host/MassStorage.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Host/MIDI.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Host/Printer.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Host/RNDIS.o
+ .data          0x00800116        0x0 ../../LUFA/Drivers/USB/Class/Host/StillImage.o
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy_P.o)
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcmp.o)
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy.o)
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memset.o)
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eerd_byte.o)
+ .data          0x00800116        0x0 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eeupd_byte.o)
+ *(.data*)
+ *(.rodata)
+ *(.rodata*)
+ *(.gnu.linkonce.d*)
+                0x00800116                . = ALIGN (0x2)
+                0x00800116                _edata = .
+                0x00800116                PROVIDE (__data_end, .)
+
+.bss            0x00800116      0x119
+                0x00800116                PROVIDE (__bss_start, .)
+ *(.bss)
+ *(.bss*)
+ *(COMMON)
+ COMMON         0x00800116      0x10d Arduino-usbserial.o
+                0x00800116                PulseMSRemaining
+                0x00800119                USARTtoUSB_Buffer
+                0x0080019e                USBtoUSART_Buffer
+ COMMON         0x00800223        0x3 ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+                0x00800223                USB_CurrentlySelfPowered
+                0x00800224                USB_RemoteWakeupEnabled
+                0x00800225                USB_ConfigurationNumber
+ COMMON         0x00800226        0x9 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+                0x00800226                USB_IsInitialized
+                0x00800227                USB_ControlRequest
+                0x0080022f                PROVIDE (__bss_end, .)
+                0x00000f4c                __data_load_start = LOADADDR (.data)
+                0x00000f62                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x0080022f        0x0
+                0x0080022f                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x0080022f                PROVIDE (__noinit_end, .)
+                0x0080022f                _end = .
+                0x0080022f                PROVIDE (__heap_start, .)
+
+.eeprom         0x00810000        0x0
+ *(.eeprom*)
+                0x00810000                __eeprom_end = .
+
+.fuse
+ *(.fuse)
+ *(.lfuse)
+ *(.hfuse)
+ *(.efuse)
+
+.lock
+ *(.lock*)
+
+.signature
+ *(.signature*)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x00000000       0x11
+ *(.comment)
+ .comment       0x00000000       0x11 Arduino-usbserial.o
+                                 0x12 (size before relaxing)
+ .comment       0x00000011       0x12 Descriptors.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/LowLevel/Host.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/LowLevel/Pipe.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/HighLevel/Events.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/HighLevel/HostStandardReq.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Host/HIDParser.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Host/CDC.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Host/HID.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Host/MassStorage.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Host/MIDI.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Host/Printer.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Host/RNDIS.o
+ .comment       0x00000011       0x12 ../../LUFA/Drivers/USB/Class/Host/StillImage.o
+
+.note.gnu.avr.deviceinfo
+                0x00000000       0x3c
+ .note.gnu.avr.deviceinfo
+                0x00000000       0x3c c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+
+.note.gnu.build-id
+ *(.note.gnu.build-id)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x00000000      0x410
+ *(.debug_aranges)
+ .debug_aranges
+                0x00000000       0x60 Arduino-usbserial.o
+ .debug_aranges
+                0x00000060       0x20 Descriptors.o
+ .debug_aranges
+                0x00000080       0x20 ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .debug_aranges
+                0x000000a0       0xe8 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .debug_aranges
+                0x00000188       0x30 ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .debug_aranges
+                0x000001b8       0x38 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .debug_aranges
+                0x000001f0       0x38 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .debug_aranges
+                0x00000228       0x20 ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .debug_aranges
+                0x00000248       0x20 ../../LUFA/Drivers/USB/HighLevel/Events.o
+ .debug_aranges
+                0x00000268       0x20 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .debug_aranges
+                0x00000288       0x28 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .debug_aranges
+                0x000002b0       0x90 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .debug_aranges
+                0x00000340       0x30 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .debug_aranges
+                0x00000370       0x38 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .debug_aranges
+                0x000003a8       0x38 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .debug_aranges
+                0x000003e0       0x30 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info     0x00000000     0x8780
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x00000000      0x696 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+ .debug_info    0x00000696      0xc0c Arduino-usbserial.o
+ .debug_info    0x000012a2      0x65b Descriptors.o
+ .debug_info    0x000018fd       0xd2 ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .debug_info    0x000019cf     0x16d8 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .debug_info    0x000030a7      0x29b ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .debug_info    0x00003342      0x42e ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .debug_info    0x00003770      0x3df ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .debug_info    0x00003b4f      0x9be ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .debug_info    0x0000450d       0x78 ../../LUFA/Drivers/USB/HighLevel/Events.o
+ .debug_info    0x00004585      0x236 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .debug_info    0x000047bb      0x453 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .debug_info    0x00004c0e      0xe48 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .debug_info    0x00005a56      0xa30 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .debug_info    0x00006486      0xa23 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .debug_info    0x00006ea9      0x6f7 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .debug_info    0x000075a0     0x11e0 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+
+.debug_abbrev   0x00000000     0x26a7
+ *(.debug_abbrev)
+ .debug_abbrev  0x00000000      0x63b c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+ .debug_abbrev  0x0000063b      0x334 Arduino-usbserial.o
+ .debug_abbrev  0x0000096f      0x150 Descriptors.o
+ .debug_abbrev  0x00000abf       0x80 ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .debug_abbrev  0x00000b3f      0x242 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .debug_abbrev  0x00000d81      0x125 ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .debug_abbrev  0x00000ea6      0x211 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .debug_abbrev  0x000010b7      0x192 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .debug_abbrev  0x00001249      0x2bf ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .debug_abbrev  0x00001508       0x44 ../../LUFA/Drivers/USB/HighLevel/Events.o
+ .debug_abbrev  0x0000154c      0x15c ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .debug_abbrev  0x000016a8      0x1d6 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .debug_abbrev  0x0000187e      0x390 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .debug_abbrev  0x00001c0e      0x285 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .debug_abbrev  0x00001e93      0x2bb ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .debug_abbrev  0x0000214e      0x234 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .debug_abbrev  0x00002382      0x325 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+
+.debug_line     0x00000000     0x320c
+ *(.debug_line .debug_line.* .debug_line_end)
+ .debug_line    0x00000000       0x1a c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+ .debug_line    0x0000001a      0x457 Arduino-usbserial.o
+ .debug_line    0x00000471      0x154 Descriptors.o
+ .debug_line    0x000005c5       0xd8 ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .debug_line    0x0000069d      0xb5f ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .debug_line    0x000011fc        0x0 ../../LUFA/Drivers/USB/LowLevel/Host.o
+ .debug_line    0x000011fc        0x0 ../../LUFA/Drivers/USB/LowLevel/Pipe.o
+ .debug_line    0x000011fc      0x1da ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .debug_line    0x000013d6      0x293 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .debug_line    0x00001669      0x180 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .debug_line    0x000017e9      0x30f ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .debug_line    0x00001af8       0x59 ../../LUFA/Drivers/USB/HighLevel/Events.o
+ .debug_line    0x00001b51        0x0 ../../LUFA/Drivers/USB/HighLevel/HostStandardReq.o
+ .debug_line    0x00001b51      0x173 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .debug_line    0x00001cc4        0x0 ../../LUFA/Drivers/USB/Class/Host/HIDParser.o
+ .debug_line    0x00001cc4      0x1f9 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .debug_line    0x00001ebd      0x4bf ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .debug_line    0x0000237c      0x3b1 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .debug_line    0x0000272d      0x3a3 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .debug_line    0x00002ad0      0x2a2 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .debug_line    0x00002d72      0x49a ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+ .debug_line    0x0000320c        0x0 ../../LUFA/Drivers/USB/Class/Host/CDC.o
+ .debug_line    0x0000320c        0x0 ../../LUFA/Drivers/USB/Class/Host/HID.o
+ .debug_line    0x0000320c        0x0 ../../LUFA/Drivers/USB/Class/Host/MassStorage.o
+ .debug_line    0x0000320c        0x0 ../../LUFA/Drivers/USB/Class/Host/MIDI.o
+ .debug_line    0x0000320c        0x0 ../../LUFA/Drivers/USB/Class/Host/Printer.o
+ .debug_line    0x0000320c        0x0 ../../LUFA/Drivers/USB/Class/Host/RNDIS.o
+ .debug_line    0x0000320c        0x0 ../../LUFA/Drivers/USB/Class/Host/StillImage.o
+
+.debug_frame    0x00000000      0xc60
+ *(.debug_frame)
+ .debug_frame   0x00000000      0x10c Arduino-usbserial.o
+ .debug_frame   0x0000010c       0x24 Descriptors.o
+ .debug_frame   0x00000130       0x24 ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .debug_frame   0x00000154      0x3ec ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .debug_frame   0x00000540       0x44 ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .debug_frame   0x00000584      0x11c ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .debug_frame   0x000006a0       0xc8 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .debug_frame   0x00000768       0x3c ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .debug_frame   0x000007a4       0x24 ../../LUFA/Drivers/USB/HighLevel/Events.o
+ .debug_frame   0x000007c8       0x2c ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .debug_frame   0x000007f4       0x48 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .debug_frame   0x0000083c      0x174 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .debug_frame   0x000009b0      0x108 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .debug_frame   0x00000ab8       0x84 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .debug_frame   0x00000b3c       0x6c ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .debug_frame   0x00000ba8       0xb8 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+
+.debug_str      0x00000000     0x2fb1
+ *(.debug_str)
+ .debug_str     0x00000000      0x256 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+ .debug_str     0x00000256      0x7bf Arduino-usbserial.o
+                                0x818 (size before relaxing)
+ .debug_str     0x00000a15      0x471 Descriptors.o
+                                0x699 (size before relaxing)
+ .debug_str     0x00000e86       0x71 ../../LUFA/Drivers/USB/LowLevel/Device.o
+                                0x21b (size before relaxing)
+ .debug_str     0x00000ef7      0x820 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                0xad3 (size before relaxing)
+ .debug_str     0x00001717       0x27 ../../LUFA/Drivers/USB/LowLevel/Host.o
+                                0x153 (size before relaxing)
+ .debug_str     0x0000173e       0x27 ../../LUFA/Drivers/USB/LowLevel/Pipe.o
+                                0x153 (size before relaxing)
+ .debug_str     0x00001765      0x14d ../../LUFA/Drivers/USB/LowLevel/USBController.o
+                                0x3c8 (size before relaxing)
+ .debug_str     0x000018b2      0x152 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+                                0x4e7 (size before relaxing)
+ .debug_str     0x00001a04      0x221 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+                                0x403 (size before relaxing)
+ .debug_str     0x00001c25      0x337 ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+                                0x911 (size before relaxing)
+ .debug_str     0x00001f5c       0x39 ../../LUFA/Drivers/USB/HighLevel/Events.o
+                                0x1cc (size before relaxing)
+ .debug_str     0x00001f95       0x33 ../../LUFA/Drivers/USB/HighLevel/HostStandardReq.o
+                                0x15f (size before relaxing)
+ .debug_str     0x00001fc8       0x47 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+                                0x386 (size before relaxing)
+ .debug_str     0x0000200f       0x2e ../../LUFA/Drivers/USB/Class/Host/HIDParser.o
+                                0x15a (size before relaxing)
+ .debug_str     0x0000203d       0xeb ../../LUFA/Drivers/USB/Class/Device/Audio.o
+                                0x522 (size before relaxing)
+ .debug_str     0x00002128      0x159 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                0xa5a (size before relaxing)
+ .debug_str     0x00002281      0x272 ../../LUFA/Drivers/USB/Class/Device/HID.o
+                                0x740 (size before relaxing)
+ .debug_str     0x000024f3      0x249 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+                                0x861 (size before relaxing)
+ .debug_str     0x0000273c      0x104 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+                                0x75d (size before relaxing)
+ .debug_str     0x00002840      0x643 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+                                0xc59 (size before relaxing)
+ .debug_str     0x00002e83       0x28 ../../LUFA/Drivers/USB/Class/Host/CDC.o
+                                0x154 (size before relaxing)
+ .debug_str     0x00002eab       0x28 ../../LUFA/Drivers/USB/Class/Host/HID.o
+                                0x154 (size before relaxing)
+ .debug_str     0x00002ed3       0x30 ../../LUFA/Drivers/USB/Class/Host/MassStorage.o
+                                0x15c (size before relaxing)
+ .debug_str     0x00002f03       0x29 ../../LUFA/Drivers/USB/Class/Host/MIDI.o
+                                0x155 (size before relaxing)
+ .debug_str     0x00002f2c       0x2c ../../LUFA/Drivers/USB/Class/Host/Printer.o
+                                0x158 (size before relaxing)
+ .debug_str     0x00002f58       0x2a ../../LUFA/Drivers/USB/Class/Host/RNDIS.o
+                                0x156 (size before relaxing)
+ .debug_str     0x00002f82       0x2f ../../LUFA/Drivers/USB/Class/Host/StillImage.o
+                                0x15b (size before relaxing)
+
+.debug_loc      0x00000000     0x4f4b
+ *(.debug_loc)
+ .debug_loc     0x00000000      0x57e Arduino-usbserial.o
+ .debug_loc     0x0000057e      0x186 Descriptors.o
+ .debug_loc     0x00000704     0x1bbe ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .debug_loc     0x000022c2       0x13 ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .debug_loc     0x000022d5      0x23e ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .debug_loc     0x00002513      0x4d7 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .debug_loc     0x000029ea      0x31e ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .debug_loc     0x00002d08       0x49 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .debug_loc     0x00002d51      0x1c3 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .debug_loc     0x00002f14      0x86f ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .debug_loc     0x00003783      0x4c4 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .debug_loc     0x00003c47      0x389 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .debug_loc     0x00003fd0      0x3f0 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .debug_loc     0x000043c0      0xb8b ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+.debug_pubtypes
+ *(.debug_pubtypes)
+
+.debug_ranges   0x00000000      0x480
+ *(.debug_ranges)
+ .debug_ranges  0x00000000       0x50 Arduino-usbserial.o
+ .debug_ranges  0x00000050       0x10 Descriptors.o
+ .debug_ranges  0x00000060       0x10 ../../LUFA/Drivers/USB/LowLevel/Device.o
+ .debug_ranges  0x00000070      0x168 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+ .debug_ranges  0x000001d8       0x20 ../../LUFA/Drivers/USB/LowLevel/USBController.o
+ .debug_ranges  0x000001f8       0x28 ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+ .debug_ranges  0x00000220       0x28 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+ .debug_ranges  0x00000248       0x10 ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+ .debug_ranges  0x00000258       0x10 ../../LUFA/Drivers/USB/HighLevel/Events.o
+ .debug_ranges  0x00000268       0x10 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+ .debug_ranges  0x00000278       0x30 ../../LUFA/Drivers/USB/Class/Device/Audio.o
+ .debug_ranges  0x000002a8       0x98 ../../LUFA/Drivers/USB/Class/Device/CDC.o
+ .debug_ranges  0x00000340       0x38 ../../LUFA/Drivers/USB/Class/Device/HID.o
+ .debug_ranges  0x00000378       0x40 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ .debug_ranges  0x000003b8       0x40 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+ .debug_ranges  0x000003f8       0x88 ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+
+.debug_macro
+ *(.debug_macro)
+OUTPUT(Arduino-usbserial.elf elf32-avr)
+LOAD linker stubs
+
+Cross Reference Table
+
+Symbol                                            File
+Audio_Device_ConfigureEndpoints                   ../../LUFA/Drivers/USB/Class/Device/Audio.o
+Audio_Device_ProcessControlRequest                ../../LUFA/Drivers/USB/Class/Device/Audio.o
+CALLBACK_HID_Device_CreateHIDReport               ../../LUFA/Drivers/USB/Class/Device/HID.o
+CALLBACK_HID_Device_ProcessHIDReport              ../../LUFA/Drivers/USB/Class/Device/HID.o
+CALLBACK_MS_Device_SCSICommandReceived            ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+CALLBACK_USB_GetDescriptor                        Descriptors.o
+                                                  ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+CDC_Device_BytesReceived                          ../../LUFA/Drivers/USB/Class/Device/CDC.o
+CDC_Device_ConfigureEndpoints                     ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  Arduino-usbserial.o
+CDC_Device_CreateBlockingStream                   ../../LUFA/Drivers/USB/Class/Device/CDC.o
+CDC_Device_CreateStream                           ../../LUFA/Drivers/USB/Class/Device/CDC.o
+CDC_Device_Event_Stub                             ../../LUFA/Drivers/USB/Class/Device/CDC.o
+CDC_Device_Flush                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+CDC_Device_ProcessControlRequest                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  Arduino-usbserial.o
+CDC_Device_ReceiveByte                            ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  Arduino-usbserial.o
+CDC_Device_SendByte                               ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  Arduino-usbserial.o
+CDC_Device_SendControlLineStateChange             ../../LUFA/Drivers/USB/Class/Device/CDC.o
+CDC_Device_SendString                             ../../LUFA/Drivers/USB/Class/Device/CDC.o
+CDC_Device_USBTask                                ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  Arduino-usbserial.o
+ConfigurationDescriptor                           Descriptors.o
+DeviceDescriptor                                  Descriptors.o
+EVENT_CDC_Device_BreakSent                        ../../LUFA/Drivers/USB/Class/Device/CDC.o
+EVENT_CDC_Device_ControLineStateChanged           Arduino-usbserial.o
+EVENT_CDC_Device_LineEncodingChanged              Arduino-usbserial.o
+EVENT_USB_Device_ConfigurationChanged             Arduino-usbserial.o
+                                                  ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+EVENT_USB_Device_Connect                          ../../LUFA/Drivers/USB/HighLevel/Events.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+EVENT_USB_Device_Disconnect                       ../../LUFA/Drivers/USB/HighLevel/Events.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+EVENT_USB_Device_Reset                            ../../LUFA/Drivers/USB/HighLevel/Events.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+EVENT_USB_Device_StartOfFrame                     ../../LUFA/Drivers/USB/HighLevel/Events.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+EVENT_USB_Device_Suspend                          ../../LUFA/Drivers/USB/HighLevel/Events.o
+EVENT_USB_Device_UnhandledControlRequest          Arduino-usbserial.o
+                                                  ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+EVENT_USB_Device_WakeUp                           ../../LUFA/Drivers/USB/HighLevel/Events.o
+Endpoint_BytesToEPSizeMaskDynamic                 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/HID.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/Audio.o
+Endpoint_ClearEndpoints                           ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+Endpoint_ClearStatusStage                         ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/HID.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/Audio.o
+                                                  ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+Endpoint_ConfigureEndpoint_Prv                    ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/HID.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/Audio.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+Endpoint_Discard_Stream                           ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Read_Control_EStream_BE                  ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Read_Control_EStream_LE                  ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Read_Control_Stream_BE                   ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Read_Control_Stream_LE                   ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/HID.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+Endpoint_Read_EStream_BE                          ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Read_EStream_LE                          ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Read_Stream_BE                           ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Read_Stream_LE                           ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+Endpoint_WaitUntilReady                           ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+Endpoint_Write_Control_EStream_BE                 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Write_Control_EStream_LE                 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Write_Control_PStream_BE                 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Write_Control_PStream_LE                 ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                                  ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+Endpoint_Write_Control_Stream_BE                  ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Write_Control_Stream_LE                  ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/HID.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+Endpoint_Write_EStream_BE                         ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Write_EStream_LE                         ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Write_PStream_BE                         ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Write_PStream_LE                         ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Write_Stream_BE                          ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+Endpoint_Write_Stream_LE                          ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/HID.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+HID_Device_ConfigureEndpoints                     ../../LUFA/Drivers/USB/Class/Device/HID.o
+HID_Device_ProcessControlRequest                  ../../LUFA/Drivers/USB/Class/Device/HID.o
+HID_Device_USBTask                                ../../LUFA/Drivers/USB/Class/Device/HID.o
+LanguageString                                    Descriptors.o
+MIDI_Device_ConfigureEndpoints                    ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+MIDI_Device_Flush                                 ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+MIDI_Device_ReceiveEventPacket                    ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+MIDI_Device_SendEventPacket                       ../../LUFA/Drivers/USB/Class/Device/MIDI.o
+MS_Device_ConfigureEndpoints                      ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+MS_Device_ProcessControlRequest                   ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+MS_Device_USBTask                                 ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+ManufacturerString                                Descriptors.o
+ProductString                                     Descriptors.o
+PulseMSRemaining                                  Arduino-usbserial.o
+RNDIS_Device_ConfigureEndpoints                   ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+RNDIS_Device_ProcessControlRequest                ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+RNDIS_Device_USBTask                              ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+SetupHardware                                     Arduino-usbserial.o
+USARTtoUSB_Buffer                                 Arduino-usbserial.o
+USB_ConfigurationNumber                           ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBController.o
+USB_ControlRequest                                ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/HID.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/Audio.o
+                                                  ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+USB_CurrentlySelfPowered                          ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBController.o
+USB_Device_ProcessControlRequest                  ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+                                                  ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+USB_Device_SendRemoteWakeup                       ../../LUFA/Drivers/USB/LowLevel/Device.o
+USB_Event_Stub                                    ../../LUFA/Drivers/USB/HighLevel/Events.o
+USB_GetNextDescriptorComp                         ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+USB_GetNextDescriptorOfType                       ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+USB_GetNextDescriptorOfTypeAfter                  ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+USB_GetNextDescriptorOfTypeBefore                 ../../LUFA/Drivers/USB/HighLevel/ConfigDescriptor.o
+USB_INT_ClearAllInterrupts                        ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBController.o
+USB_INT_DisableAllInterrupts                      ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBController.o
+USB_Init                                          ../../LUFA/Drivers/USB/LowLevel/USBController.o
+                                                  Arduino-usbserial.o
+USB_IsInitialized                                 ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBController.o
+USB_RemoteWakeupEnabled                           ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+                                                  ../../LUFA/Drivers/USB/LowLevel/USBController.o
+USB_ResetInterface                                ../../LUFA/Drivers/USB/LowLevel/USBController.o
+USB_ShutDown                                      ../../LUFA/Drivers/USB/LowLevel/USBController.o
+USB_USBTask                                       ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  Arduino-usbserial.o
+USBtoUSART_Buffer                                 Arduino-usbserial.o
+VirtualSerial_CDC_Interface                       Arduino-usbserial.o
+__FUSE_REGION_LENGTH__                            c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__bad_interrupt                                   c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__bss_end                                         c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+__bss_start                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+__data_end                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+__data_load_start                                 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+__data_start                                      c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+__do_clear_bss                                    c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_clear_bss.o)
+                                                  ../../LUFA/Drivers/USB/Class/Device/MassStorage.o
+                                                  ../../LUFA/Drivers/USB/HighLevel/USBTask.o
+                                                  ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+                                                  Arduino-usbserial.o
+__do_copy_data                                    c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_copy_data.o)
+                                                  ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/CDC.o
+                                                  Arduino-usbserial.o
+__heap_end                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__init                                            c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__stack                                           c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__tablejump2__                                    c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_tablejump2.o)
+                                                  ../../LUFA/Drivers/USB/HighLevel/DeviceStandardReq.o
+__udivmodsi4                                      c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_udivmodsi4.o)
+                                                  Arduino-usbserial.o
+__vector_1                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_10                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_11                                       ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+                                                  c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_12                                       ../../LUFA/Drivers/USB/LowLevel/USBInterrupt.o
+                                                  c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_13                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_14                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_15                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_16                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_17                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_18                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_19                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_2                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_20                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_21                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_22                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_23                                       Arduino-usbserial.o
+                                                  c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_24                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_25                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_26                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_27                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_28                                       c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_3                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_4                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_5                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_6                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_7                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_8                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_9                                        c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vector_default                                  c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+__vectors                                         c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+_exit                                             c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+eeprom_read_byte                                  c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eerd_byte.o)
+                                                  ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+eeprom_update_byte                                c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eeupd_byte.o)
+                                                  ../../LUFA/Drivers/USB/LowLevel/Endpoint.o
+eeprom_update_r18                                 c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libatmega8u2.a(eeupd_byte.o)
+exit                                              c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/avr35\libgcc.a(_exit.o)
+                                                  c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+main                                              Arduino-usbserial.o
+                                                  c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35/crtatmega8u2.o
+memcmp                                            c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcmp.o)
+                                                  ../../LUFA/Drivers/USB/Class/Device/HID.o
+memcpy                                            c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy.o)
+                                                  ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+                                                  ../../LUFA/Drivers/USB/Class/Device/HID.o
+memcpy_P                                          c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memcpy_P.o)
+                                                  ../../LUFA/Drivers/USB/Class/Device/RNDIS.o
+memset                                            c:/program files (x86)/arduino/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avr35\libc.a(memset.o)
+                                                  ../../LUFA/Drivers/USB/Class/Device/HID.o
