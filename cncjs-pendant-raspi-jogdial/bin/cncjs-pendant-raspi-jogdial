@@ -1,0 +1,356 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var path = require('path');
+var program = require('commander');
+var serialport = require('serialport');
+var inquirer = require('inquirer');
+var pkg = require('../package.json');
+var serverMain = require('../index');
+
+var util = require('util')
+var exec = require('child_process').exec;
+
+var sleep = require('sleep');
+var now = require("performance-now")
+var gpio = require('onoff').Gpio,
+  buttonX = new gpio(17, 'in', 'both', {debounceTimeout: 10});  
+  buttonY = new gpio(27, 'in', 'both', {debounceTimeout: 10});
+  buttonZ = new gpio(22, 'in', 'both', {debounceTimeout: 10});
+  button4 = new gpio(10, 'in', 'both', {debounceTimeout: 10});
+  buttonX1 = new gpio(9, 'in', 'both', {debounceTimeout: 0});
+  buttonX10 = new gpio(11, 'in', 'both', {debounceTimeout: 0});
+  buttonX100 = new gpio(0, 'in', 'both', {debounceTimeout: 0});
+  buttonEStop = new gpio(5, 'in', 'both', {debounceTimeout: 10});
+  buttonValA = new gpio(14, 'in', 'rising', {debounceTimeout: 10});
+  buttonValB = new gpio(15, 'in', 'both', {debounceTimeout: 10});
+  buttonLED = new gpio(18, 'out');
+
+const JOGGING_TICK_THRESHOLD = 15
+const SINGLESTEP_TICK_THRESHOLD = 2
+
+var options = {};
+
+program
+	.version(pkg.version)
+	.usage('-s <secret> -p <port> [options]')
+	.option('-l, --list', 'list available ports then exit')
+  .option('-s, --secret', 'the secret key stored in the ~/.cncrc file')
+	.option('-p, --port <port>', 'path or name of serial port')
+	.option('-b, --baudrate <baudrate>', 'baud rate (default: 115200)', 115200)
+	.option('--socket-address <address>', 'socket address or hostname (default: localhost)', 'localhost')
+	.option('--socket-port <port>', 'socket port (default: 8000)', 8000)
+	.option('--controller-type <type>', 'controller type: Grbl|Smoothie|TinyG (default: Grbl)', 'Grbl')
+  .option('--access-token-lifetime <lifetime>', 'access token lifetime in seconds or a time span string (default: 30d)', '30d')
+
+program.parse(process.argv);
+
+var options = {
+    secret: program.secret,
+    port: program.port,
+    baudrate: program.baudrate,
+    socketAddress: program.socketAddress,
+    socketPort: program.socketPort,
+    controllerType: program.controllerType,
+    accessTokenLifetime: program.accessTokenLifetime
+};
+
+if (options.list) {
+	serialport.list(function(err, ports) {
+		if (err) {
+			console.error(err);
+			process.exit(1);
+		}
+		ports.forEach(function(port) {
+			console.log(port.comName);
+		});
+	});
+	return;
+}
+
+var store = {
+    controller: {
+        state: {},
+        settings: {}
+    },
+    sender: {
+        status: {}
+    }
+};
+
+
+// Global Varables
+var enableSwitchPushed = false;
+var cooldown=false;
+var pulseTimer = null;
+var cooldownTimer= null;
+var joggingTimer=null;
+var jogging = false;
+var joggingLeft = false;
+var turningRight = true;
+var pulseCounter = 0;
+
+const axes = {
+    X: 'X',
+    Y: 'Y',
+    Z: 'Z',
+    UNKNOWN: "unknown"
+}
+
+const XSelector = {
+	X1: "x1",
+	X10: "x10",
+	X100: "x100",
+	UNKNOWN : "unknown"
+}
+
+function cooldownFinished() {
+	// be ready to process events again
+	cooldown = false;
+	console.log("STOP COOLDOWN")
+}
+
+function getXSelectorValue() {
+	var x1 = buttonX1.readSync()
+	var x10 = buttonX10.readSync()
+	var x100 = buttonX100.readSync()
+
+	if (x1 == 0 && x10 == 1 && x100 == 1) {
+		return XSelector.X1;
+	} 
+	else if (x1 == 1 && x10 == 0 && x100 == 1) {
+		return XSelector.X10;
+	}
+	else if (x1 == 1 && x10 == 1 && x100 == 0) {
+		return XSelector.X100;
+	}
+	else
+		return XSelector.UNKNOWN
+}
+
+function getJogDistance() {
+
+	var jogDistance = 0
+	switch(getXSelectorValue()) {
+		case XSelector.X1:
+			jogDistance = 0.1;
+			break;
+		case XSelector.X10:
+			jogDistance = 1;
+			break;
+		case XSelector.X100:
+			jogDistance = 10;
+			break;
+	}
+	return jogDistance
+}
+
+function getJoggingSpeed() {
+	var jogSpeed = "0"
+	switch(getXSelectorValue()) {
+		case XSelector.X1:
+			jogSpeed = "100";
+			break;
+		case XSelector.X10:
+			jogSpeed = "500";
+			break;
+		case XSelector.X100:
+			jogSpeed = "2000";
+			break;
+	}
+	return jogSpeed
+}
+
+function getSelectedAxis() {
+	var X = buttonX.readSync()
+	var Y = buttonY.readSync()
+	var Z = buttonZ.readSync()
+	var _4 = button4.readSync()
+
+	if (X == 0 && Y == 1 && Z == 1 && _4 == 1) {
+		return axes.X
+	} 
+	else if (X ==1 && Y == 0 && Z == 1 && _4 == 1) {
+		return axes.Y
+	}
+	else if (X == 1 && Y == 1 && Z == 0 && _4 == 1) {
+		return axes.Z
+	}
+	else
+		return axes.UNKNOWN
+}
+
+function uponDialPulseTimeout() {
+	if (jogging == true) {	
+		//console.log("STOP JOG!")
+		jogging = false;
+		socket.emit('write', options.port, "\x85;\n")
+		clearInterval(joggingTimer);		
+		// start a 500ms blanking period where we will ignore (potential/spurious) discrete job events.
+		// i.e. if the dial is turned by one click within 500ms of the end on a fast jog, it's most probably an involuntary move
+		cooldown = true;
+		clearTimeout(cooldownTimer);
+		cooldownTimer = setTimeout(cooldownFinished, 100);
+	} else {
+		if (pulseCounter >= SINGLESTEP_TICK_THRESHOLD) {
+			console.log("STEP RIGHT " + getSelectedAxis()+ " by " + getJogDistance())
+			socket.emit('write', options.port, "G91;\n");
+			socket.emit('write', options.port, "G0 "+ getSelectedAxis() + getJogDistance() +";\n");
+			socket.emit('write', options.port, "G90;\n");
+		}
+		else if (pulseCounter <= -SINGLESTEP_TICK_THRESHOLD) {
+			console.log("STEP LEFT "+ getSelectedAxis() + " by "+ getJogDistance())
+			socket.emit('write', options.port, "G91;\n");
+			socket.emit('write', options.port, "G0 "+ getSelectedAxis() +"-"+ getJogDistance() +";\n");
+			socket.emit('write', options.port, "G90;\n");
+		}		
+	}
+	pulseCounter = 0;
+}
+
+function uponJoggingTimer() {
+	if (jogging == true) {
+		if (pulseCounter>=0) {
+			socket.emit('write', options.port, "$J=G91 G21 "+ getSelectedAxis() + "10 F"+ getJoggingSpeed() + "\n")
+		}
+		else {
+			socket.emit('write', options.port, "$J=G91 G21 "+ getSelectedAxis() + "-10 F"+ getJoggingSpeed() + "\n")
+		}
+	}
+}
+
+function uponEnabled() {
+	console.log("ENABLED!")
+	enableSwitchPushed = true;
+	buttonLED.writeSync(1);
+}
+
+function uponDisabled() {
+	console.log("DISABLED!")
+	enableSwitchPushed = false;
+	buttonLED.writeSync(0);
+}
+
+var createServer = function(options) {
+
+	buttonX1.watch(function (err, state) {
+		if (enableSwitchPushed==false && state == 0)
+			uponEnabled();
+		else if ((enableSwitchPushed==true ) && (buttonX1.readSync() == 1) && (buttonX10.readSync() == 1) && (buttonX100.readSync() == 1) )
+			uponDisabled();
+	});			
+
+	buttonX10.watch(function (err, state) {
+		if (enableSwitchPushed==false && state == 0)
+			uponEnabled();	
+		else if ((enableSwitchPushed==true ) &&(buttonX1.readSync() == 1) && (buttonX10.readSync() == 1) && (buttonX100.readSync() == 1) )
+			uponDisabled();				
+	});	
+
+	buttonX100.watch(function (err, state) {
+		if (enableSwitchPushed==false && state == 0)
+			uponEnabled();	
+		else if ((enableSwitchPushed==true ) &&(buttonX1.readSync() == 1) && (buttonX10.readSync() == 1) && (buttonX100.readSync() == 1) )
+			uponDisabled();
+	});	
+
+	buttonEStop.watch(function (err, state) {
+		console.log("watch EStop: " + state)
+	});			
+
+	buttonValA.watch(function (err, state) {
+
+		if (enableSwitchPushed && cooldown == false) { 
+			if (buttonValA.readSync() != buttonValB.readSync()) {
+				pulseCounter++;
+			}
+			else {
+				pulseCounter--;
+			}
+
+			//re-arm pulse timer
+			clearTimeout(pulseTimer)
+			pulseTimer = setTimeout(uponDialPulseTimeout, 100);
+
+			//console.log("pulseCounter: " + pulseCounter)
+			if ((jogging == false) && (Math.abs(pulseCounter) > JOGGING_TICK_THRESHOLD)) {
+				jogging = true;
+				joggingTimer = setInterval(uponJoggingTimer, 200);
+				if (pulseCounter>=0) {
+					console.log("START JOGGING "+ getSelectedAxis() + " to the RIGHT at speed " + getJoggingSpeed())
+					socket.emit('write', options.port, "$J=G91 G21 "+ getSelectedAxis() + "10 F"+ getJoggingSpeed() + "\n")
+				}
+				else {
+					console.log("START JOGGING "+ getSelectedAxis() + " to the LEFT at speed " + getJoggingSpeed())
+					socket.emit('write', options.port, "$J=G91 G21 "+ getSelectedAxis() + "-10 F"+ getJoggingSpeed() + "\n")
+				}
+			}
+		}
+
+	});	
+
+
+  // Server Connection
+  serverMain(options, function(err, socket) {
+      // Grbl
+      socket.on('Grbl:state', function(state) {
+          store.controller.state = state;
+      });
+      socket.on('Grbl:settings', function(settings) {
+          store.controller.settings = settings;
+      });
+
+      // Sender
+      socket.on('sender:status', function(data) {
+          store.sender.status = data;
+      });
+
+
+    });
+};
+
+if (options.port) {
+    createServer(options);
+    return;
+}
+
+serialport.list(function(err, ports) {
+    if (err) {
+        console.error(err);
+        process.exit(1);
+    }
+    const choices = ports.map(function(port) {
+        return port.comName;
+    });
+
+    inquirer.prompt([{
+        type: 'list',
+        name: 'port',
+        message: 'Specify which port you want to use?',
+        choices: choices
+    }]).then(function(answers) {
+        options.port = answers.port;
+
+        createServer(options);
+    });
+});
+
+// Clean Proccess Kill
+process.on('SIGINT', function () {
+	buttonX.unexport(); 
+	buttonY.unexport(); 
+	buttonZ.unexport();
+	button4.unexport();
+	buttonX1.unexport(); 
+	buttonX10.unexport();
+	buttonX100.unexport(); 
+	buttonEStop.unexport();
+	buttonValA.unexport(); 
+	buttonValB.unexport(); 
+	buttonLED.unexport();
+
+	clearTimeout(button_hold_fuction);
+	button_hold_fuction = null
+	clearTimeout(button_presses_fuction);
+	button_presses_fuction = null
+});
