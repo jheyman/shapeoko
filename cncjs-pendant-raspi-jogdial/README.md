@@ -2,14 +2,7 @@
 Pendant control for CNCjs interfacing a jogdial. Initially based on cncjs-pendant-raspi-gpio repo.
 
 ## Usage
-Run `bin/cncjs-pendant-raspi-jogdial` to start. Pass --help to `cncjs-pendant-raspi-jogdial` for more options.
-
-Examples:
-
-```
-bin/cncjs-pendant-keyboard --help
-node bin/cncjs-pendant-raspi-jogdial  --port /dev/ttyUSB0
-```
+Run `node bin/cncjs-pendant-raspi-jogdial` to start. Pass --help for more options.
 
 #### Auto Start
 
