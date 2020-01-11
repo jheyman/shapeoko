@@ -38,4 +38,4 @@ pm2 list
 
 ## Wiring 
 
-![wiring](https://github.com/jheyman/shapeoko/cncjs-pendant-raspi-jogdial/docs/wiring.png)
+![wiring](https://github.com/jheyman/shapeoko/cncjs-pendant-raspi-jogdial/raw/master/docs/wiring.png)
