@@ -81,12 +81,12 @@ module.exports = function(options, callback) {
     });
 
     socket.on('serialport:read', function(data) {
-        console.log((data || '').trim());
+        console.log("[GRBL in]"+(data || '').trim());
     });
 
 
     socket.on('serialport:write', function(data) {
-        console.log((data || '').trim());
+        console.log("[GRBL out]"+(data || '').trim());
     });
 
 };

@@ -8,7 +8,7 @@ Examples:
 
 ```
 bin/cncjs-pendant-keyboard --help
-node bin/cncjs-pendant-raspi-gpio  --port /dev/ttyUSB0
+node bin/cncjs-pendant-raspi-jogdial  --port /dev/ttyUSB0
 ```
 
 #### Auto Start
