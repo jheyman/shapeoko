@@ -175,10 +175,10 @@ function getJoggingSpeed() {
 			jogSpeed = SMOOTHJOG_X1_JOGSPEED;
 			break;
 		case XSelector.X10:
-			jogSpeed = SMOOTHJOG_X1_JOGSPEED;
+			jogSpeed = SMOOTHJOG_X10_JOGSPEED;
 			break;
 		case XSelector.X100:
-			jogSpeed = SMOOTHJOG_X1_JOGSPEED;
+			jogSpeed = SMOOTHJOG_X100_JOGSPEED;
 			break;
 	}
 	return jogSpeed
