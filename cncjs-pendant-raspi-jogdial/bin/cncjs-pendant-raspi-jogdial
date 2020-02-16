@@ -43,6 +43,7 @@ const SMOOTHJOG_X10_JOGSPEED = 1000 // continuous jog speed in mm/min when X10 i
 const SMOOTHJOG_X100_JOGSPEED = 5000 // continuous jog speed in mm/min when X100 is selected
 const SMOOTHJOG_BLANKING_PERIOD_ON_STOP = 100 // time in ms where we ignore dial events right after stopping a smooth jogging
 const SMOOTHJOG_COMMANDS_INTERVAL = 200 // period in ms at which the $J jogging commands are sent to the machine
+const SMOOTHJOG_JOGSTEP = 30 // unit step for continuous jog in mm. Needs to be long enough that at max jogspeed and considering the jog command interval, the movement is not completed before the next smooth jog command is sent.
 const HANDWHEEL_PULSE_TIMEOUT = 100 // max time in ms between two pulses of the A signal to consider that the pulses are part of a single user action.
 
 var options = {};
@@ -262,11 +263,11 @@ function uponJoggingTimer() {
 		if (selectedAxis != axes.UNKNOWN && jogSpeed != 0) {
 			// positive number of ticks indicates the handwheel turns clockwise, continue jogging in that direction
 			if (pulseCounter>=0) {
-				socket.emit('write', options.port, "$J=G91 G21 "+ selectedAxis + "10 F"+ jogSpeed + "\n")
+				socket.emit('write', options.port, "$J=G91 G21 "+ selectedAxis + SMOOTHJOG_JOGSTEP + " F"+ jogSpeed + "\n")
 			}
 			// negative number of ticks indicates the handwheel turns counterclockwise, continue jogging in that direction
 			else {
-				socket.emit('write', options.port, "$J=G91 G21 "+ selectedAxis + "-10 F"+ jogSpeed + "\n")
+				socket.emit('write', options.port, "$J=G91 G21 "+ selectedAxis + "-" + SMOOTHJOG_JOGSTEP + " F"+ jogSpeed + "\n")
 			}
 		} else {
 			console.log("ERROR: uponJoggingTimer / unsupported signal")
@@ -357,11 +358,11 @@ var createServer = function(options) {
 
 				if (selectedAxis != axes.UNKNOWN && jogSpeed != 0) {
 					if (pulseCounter>=0) {
-						socket.emit('write', options.port, "$J=G91 G21 "+ selectedAxis + "10 F"+ jogSpeed + "\n")
+						socket.emit('write', options.port, "$J=G91 G21 "+ selectedAxis + SMOOTHJOG_JOGSTEP + " F"+ jogSpeed + "\n")
 						console.log("START JOGGING "+ selectedAxis + " mm" + " in the positive direction at speed " + jogSpeed + " mm/min")				
 					}
 					else {
-						socket.emit('write', options.port, "$J=G91 G21 "+ selectedAxis + "-10 F"+ jogSpeed + "\n")
+						socket.emit('write', options.port, "$J=G91 G21 "+ selectedAxis + "-" + SMOOTHJOG_JOGSTEP + " F"+ jogSpeed + "\n")
 						console.log("START JOGGING "+ selectedAxis + " mm" + " in the negative direction at speed " + jogSpeed + " mm/min")			
 					}
 				} else {
