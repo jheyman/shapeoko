@@ -45,7 +45,7 @@ const SMOOTHJOG_BLANKING_PERIOD_ON_STOP = 100 // time in ms where we ignore dial
 const SMOOTHJOG_COMMANDS_INTERVAL = 200 // period in ms at which the $J jogging commands are sent to the machine
 const SMOOTHJOG_JOGSTEP = 30 // unit step for continuous jog in mm. Needs to be long enough that at max jogspeed and considering the jog command interval, the movement is not completed before the next smooth jog command is sent.
 const HANDWHEEL_PULSE_TIMEOUT = 100 // max time in ms between two pulses of the A signal to consider that the pulses are part of a single user action.
-
+const FEEDHOLD_LEDBLINK_INTERVAL = 250 // blink period for LED during feed hold
 var options = {};
 
 program
@@ -107,6 +107,9 @@ var pulseCounter = 0;  // counts pulses of signal A generated while handwheel is
 
 var joggingTimer=null; // timer triggered regularly WHILE jogging, to support sending $J smooth jogging commands to GRBL
 var smoothJogging = false; // indicates whether we are currently in a jogging move
+
+var feedHoldTimer=null; // used to blink the LED while feedhold is active
+var feedholdActivated = false; // indicates whether we are currently in feedhold state or not
 
 const axes = {
     X: 'X',
@@ -288,6 +291,34 @@ function uponDisabled() {
 	buttonLED.writeSync(0);
 	console.log("DISABLED")
 }
+// LED blink callback : toggle state
+function uponFeedHoldTimer() {
+	if (buttonLED.readSync() == 1)
+		buttonLED.writeSync(0);
+	else
+		buttonLED.writeSync(1);
+}
+
+// callback for enable button pushed
+function uponEStopEnabled() {
+	if (feedholdActivated == false) {
+		socket.emit('write', options.port, "!")
+		console.log("FEED HOLD!");
+		feedHoldTimer = setInterval(uponFeedHoldTimer, FEEDHOLD_LEDBLINK_INTERVAL);
+		feedholdActivated = true;
+	}
+}
+
+// callback for enable button released
+function uponEStopDisabled() {
+	if (feedholdActivated == true) {
+		socket.emit('write', options.port, "~")
+		clearInterval(feedHoldTimer);
+		buttonLED.writeSync(0);
+		console.log("RESUME");
+		feedholdActivated = false;
+	}
+}
 
 var createServer = function(options) {
 
@@ -325,7 +356,10 @@ var createServer = function(options) {
 
 	// In this version, we do nothing with the Estop.
 	buttonEStop.watch(function (err, state) {
-		console.log("watch EStop: " + state)
+		if (state == 1) 
+			uponEStopEnabled();
+		else
+			uponEStopDisabled();
 	});	
 
 	// Monitor the pulses from the handwheel:
@@ -437,6 +471,9 @@ process.on('SIGINT', function () {
 	clearTimeout(pulseTimer);
 	pulseTimer = null;
 
-	clearTimeout(joggingTimer);
+	clearInterval(joggingTimer);
 	joggingTimer = null;
+	
+	clearInterval(feedHoldTimer);
+	feedHoldTimer = null;	
 });
