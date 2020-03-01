@@ -40,6 +40,7 @@ Pass --help to `cncjs-pendant-keyboard` for more options.
 If execution is successful, you should see something like this:
 
 >Connected to ws://{loooong string of characters here}
+
 >Connected to port ZZZ (Baud rate: 115200)
 
 At this point, the pendant will react to the following keys:
