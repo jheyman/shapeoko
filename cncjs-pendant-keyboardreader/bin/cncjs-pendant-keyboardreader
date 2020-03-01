@@ -1,0 +1,278 @@
+#!/usr/bin/env node
+
+var fs = require("fs");
+var path = require("path");
+var program = require("commander");
+var serialport = require("serialport");
+var inquirer = require("inquirer");
+var pkg = require("../package.json");
+var serverMain = require("../index");
+const readline = require('readline');
+var options = {};
+
+const axes = {
+    X: 'X',
+    Y: 'Y',
+    Z: 'Z',
+    UNKNOWN: "unknown"
+}
+
+const direction = {
+    positive: '',
+    negative: '-',
+    UNKNOWN: "unknown"
+}
+
+const SINGLESTEP_LARGE_JOGDISTANCE = 10 // large jog step in mm 
+const SINGLESTEP_MEDIUM_JOGDISTANCE = 1 // medium jog step in mm
+const SINGLESTEP_SMALL_JOGDISTANCE = 0.1 // small jog step in mm
+
+const SMOOTHJOG_JOGSTEP = 30 // mm
+const SMOOTHJOG_COMMANDS_INTERVAL = 200 // period in ms at which the $J jogging commands are sent to the machine
+const SMOOTHJOG_JOGSPEED = 5000 // mm per min
+
+var smoothJogging = false;
+var smoothJoggingTimer = null;
+
+program
+    .version(pkg.version)
+    .usage("-s <secret> -p <port> [options]")
+    .option("-l, --list", "list available ports then exit")
+    .option("-s, --secret", "the secret key stored in the ~/.cncrc file")
+    .option("-p, --port <port>", "path or name of serial port")
+    .option("-b, --baudrate <baudrate>", "baud rate (default: 115200)", 115200)
+    .option(
+        "--socket-address <address>",
+        "socket address or hostname (default: localhost)",
+        "localhost"
+    )
+    .option("--socket-port <port>", "socket port (default: 8000)", 8000)
+    .option(
+        "--controller-type <type>",
+        "controller type: Grbl|Smoothie|TinyG (default: Grbl)",
+        "Grbl"
+    )
+    .option(
+        "--access-token-lifetime <lifetime>",
+        "access token lifetime in seconds or a time span string (default: 30d)",
+        "30d"
+    );
+
+program.parse(process.argv);
+
+var options = {
+    secret: program.secret,
+    port: program.port,
+    baudrate: program.baudrate,
+    socketAddress: program.socketAddress,
+    socketPort: program.socketPort,
+    controllerType: program.controllerType,
+    accessTokenLifetime: program.accessTokenLifetime
+};
+
+if (options.list) {
+    serialport.list(function(err, ports) {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        ports.forEach(function(port) {
+            console.log(port.comName);
+        });
+    });
+    return;
+}
+
+var store = {
+    controller: {
+        state: {},
+        settings: {}
+    },
+    sender: {
+        status: {}
+    }
+};
+
+var createServer = function(options) {
+	
+    serverMain(options, function(err, socket) {
+        // Grbl
+        socket.on("Grbl:state", function(state) {
+            store.controller.state = state;
+        });
+        socket.on("Grbl:settings", function(settings) {
+            store.controller.settings = settings;
+        });
+
+        // Smoothie
+        socket.on("Smoothie:state", function(state) {
+            store.controller.state = state;
+        });
+        socket.on("Smoothie:settings", function(settings) {
+            store.controller.settings = settings;
+        });
+
+        // TinyG
+        socket.on("TinyG:state", function(state) {
+            store.controller.state = state;
+        });
+        socket.on("TinyG:settings", function(settings) {
+            store.controller.settings = settings;
+        });
+
+        // Sender
+        socket.on("sender:status", function(data) {
+            store.sender.status = data;
+        });	
+	
+	});
+};
+
+function jog_singlestep(axis, direction, jogDistance) {
+	console.log("JOG STEP " + axis + direction + jogDistance);
+
+	socket.emit('write', options.port, "G91;\n");
+	socket.emit('write', options.port, "G0 "+ axis + direction + jogDistance +";\n");
+	socket.emit('write', options.port, "G90;\n");
+}
+
+function smoothjog(axis, direction, jogDistance, jogSpeed) {
+	socket.emit('write', options.port, "$J=G91 G21 "+ axis + direction + jogDistance + " F"+ jogSpeed + "\n")
+	
+	// plan to resend a smooth jog command after a small delay to keep things going,
+	// unless user asked to stop the smooth jog movement
+	if(smoothJogging) {
+		smoothJoggingTimer = setTimeout(smoothjog, SMOOTHJOG_COMMANDS_INTERVAL, axis, direction, jogDistance, jogSpeed);
+	}
+}
+
+function StartStopSmoothJog(axis, direction, jogStep, jogSpeed) {
+	if(smoothJogging==false) {
+		smoothJogging = true;
+		smoothjog(axis, direction, jogStep, jogSpeed);
+		console.log("SMOOTH JOG " +axis + direction + jogStep + " F"+ jogSpeed);
+	} else {
+		smoothJogging = false;
+		clearTimeout(smoothJoggingTimer);
+		socket.emit('write', options.port, "\x85;\n");
+		console.log("STOP JOG");
+	}
+}
+
+// Capture key presses from the window where this program runs
+readline.emitKeypressEvents(process.stdin);
+process.stdin.setRawMode(true);
+process.stdin.on('keypress', (key, data) => {
+
+	// Ctrl+C to finish program
+	if (data.ctrl && data.name === 'c') {
+		process.exit();
+	} else {
+		// Process incoming keypress
+		switch(data.sequence){
+		
+			/////////////////////////////////////////////
+			// SMOOTH JOG : when detecting SHIFT MODIFIER
+			/////////////////////////////////////////////
+			case '\u001b[1;2D': // shift + left arrow = jog X- large step/speed 
+				StartStopSmoothJog(axes.X, direction.negative, SMOOTHJOG_JOGSTEP, SMOOTHJOG_JOGSPEED);
+				break;
+			case '\u001b[1;2C': // shift + right arrow = jog X+ large step/speed   
+				StartStopSmoothJog(axes.X, direction.positive, SMOOTHJOG_JOGSTEP, SMOOTHJOG_JOGSPEED);
+				break;
+			case '\u001b[1;2A': // shift + up arrow = jog Y+ large step/speed 
+				StartStopSmoothJog(axes.Y, direction.positive, SMOOTHJOG_JOGSTEP, SMOOTHJOG_JOGSPEED);
+				break;
+			case '\u001b[1;2B': // shift + down arrow = jog Y- large step/speed 
+				StartStopSmoothJog(axes.Y, direction.negative, SMOOTHJOG_JOGSTEP, SMOOTHJOG_JOGSPEED);
+				break;
+			case '\u001b[5;2~': // shift + PgUp = jog Z+ large step/speed 
+				StartStopSmoothJog(axes.Z, direction.positive, SMOOTHJOG_JOGSTEP, SMOOTHJOG_JOGSPEED);
+				break;
+			case '\u001b[6;2~': // shift + PgDn = jog Z- large step/speed 
+				StartStopSmoothJog(axes.Z, direction.negative, SMOOTHJOG_JOGSTEP, SMOOTHJOG_JOGSPEED);
+				break;
+				
+			////////////////////////////////////////////////////
+			// SINGLE LARGE STEP : when detecting CRTL MODIFIER
+			////////////////////////////////////////////////////
+			case '\u001b[1;5D': // Ctrl + left arrow = jog X- large step/speed 
+				jog_singlestep(axes.X, direction.negative, SINGLESTEP_LARGE_JOGDISTANCE);
+				break;
+			case '\u001b[1;5C': // Ctrl + right arrow = jog X+ large step/speed 
+				jog_singlestep(axes.X, direction.positive, SINGLESTEP_LARGE_JOGDISTANCE);
+				break;
+			case '\u001b[1;5A': // Ctrl + up arrow = jog Y+ large step/speed 
+				jog_singlestep(axes.Y, direction.positive, SINGLESTEP_LARGE_JOGDISTANCE);
+				break;
+			case '\u001b[1;5B': // Ctrl + down arrow = jog Y- large step/speed 
+				jog_singlestep(axes.Y, direction.negative, SINGLESTEP_LARGE_JOGDISTANCE);
+				break;
+			case '\u001b[5;5~': // Ctrl + PgUp = jog Z+ large step/speed 
+				jog_singlestep(axes.Z, direction.positive, SINGLESTEP_LARGE_JOGDISTANCE);
+				break;
+			case '\u001b[6;5~': // Ctrl + PgDn = jog Z- large step/speed 
+				jog_singlestep(axes.Z, direction.negative, SINGLESTEP_LARGE_JOGDISTANCE);
+				break;	
+				
+			////////////////////////////////////////////////
+			// SINGLE MEDIUM STEP : when detecting ALT MODIFIER
+			////////////////////////////////////////////////
+			case '\u001b\u001b[D': // left arrow = jog X- medium step/speed 
+				jog_singlestep(axes.X, direction.negative, SINGLESTEP_MEDIUM_JOGDISTANCE);
+				break;
+			case '\u001b\u001b[C': // right arrow = jog X+ medium step/speed 
+				jog_singlestep(axes.X, direction.positive, SINGLESTEP_MEDIUM_JOGDISTANCE);
+				break;
+			case '\u001b\u001b[A': // up arrow = jog Y+ medium step/speed 
+				jog_singlestep(axes.Y, direction.positive, SINGLESTEP_MEDIUM_JOGDISTANCE);
+				break;
+			case '\u001b\u001b[B': // down arrow = jog Y- medium step/speed 
+				jog_singlestep(axes.Y, direction.negative, SINGLESTEP_MEDIUM_JOGDISTANCE);
+				break;
+			case '\u001b\u001b[5~': // PgUp = jog Z+ medium step/speed 
+				jog_singlestep(axes.Z, direction.positive, SINGLESTEP_MEDIUM_JOGDISTANCE);
+				break;
+			case '\u001b\u001b[6~': // PgDn = jog Z- medium step/speed 
+				jog_singlestep(axes.Z, direction.negative, SINGLESTEP_MEDIUM_JOGDISTANCE);
+				break;				
+
+			////////////////////////////////////////////////
+			// SINGLE FINE STEP : when detecting NO MODIFIER
+			////////////////////////////////////////////////
+			case '\u001b[D': // left arrow = jog X- small step/speed 
+				jog_singlestep(axes.X, direction.negative, SINGLESTEP_SMALL_JOGDISTANCE);
+				break;
+			case '\u001b[C': // right arrow = jog X+ small step/speed 
+				jog_singlestep(axes.X, direction.positive, SINGLESTEP_SMALL_JOGDISTANCE);
+				break;
+			case '\u001b[A': // up arrow = jog Y+ small step/speed 
+				jog_singlestep(axes.Y, direction.positive, SINGLESTEP_SMALL_JOGDISTANCE);
+				break;
+			case '\u001b[B': // down arrow = jog Y- small step/speed 
+				jog_singlestep(axes.Y, direction.negative, SINGLESTEP_SMALL_JOGDISTANCE);
+				break;
+			case '\u001b[5~': // PgUp = jog Z+ small step/speed 
+				jog_singlestep(axes.Z, direction.positive, SINGLESTEP_SMALL_JOGDISTANCE);
+				break;
+			case '\u001b[6~': // PgDn = jog Z- small step/speed 
+				jog_singlestep(axes.Z, direction.negative, SINGLESTEP_SMALL_JOGDISTANCE);
+				break;				
+				
+			default:
+				break;		
+		} 
+		  
+		// Useful for debug/figuring out keypress codes
+		//console.log('key', key);
+		//console.log('data', data);
+	  }
+});	
+
+if (options.port) {
+    createServer(options);
+    return;
+} else {
+	console.log("Missing serial port paramerer (--port XXXXX)");
+	process.exit(1);
+}
