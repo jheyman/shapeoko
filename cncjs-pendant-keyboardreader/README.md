@@ -51,8 +51,8 @@ At this point, the pendant will react to the following keys:
 * holding the **Alt** key while pressing these jog keys will jog by the MEDIUM step size
 * holding the **Ctrl** key while pressing these jog keys will jog by the LARGE step size
 
-The distances for FINE, MEDIUM and LARGE can be modified in the the source code, they are 0.1mm, 1mm, and 10mm by default.
+The distances for FINE, MEDIUM and LARGE can be modified in the source code, they are 0.1mm, 1mm, and 10mm by default.
 
-* holding the **Shift** key while pressing a jog key will trig a CONTINUOUS smooth jog along the selected axis (no need to hold the key). Pressing the jog key again WHILE still holding the Shift key will STOP the movement.
+* /!\ holding the **Shift** key while pressing a jog key will trig a **CONTINUOUS** smooth jog along the selected axis (no need to hold the key). Pressing the jog key again WHILE still holding the Shift key will **STOP** the movement.
 
 
