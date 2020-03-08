@@ -3,5 +3,7 @@ copy README.md + workflow.md + anatomy-of-a-shapeoko.md + cad-cam-tools.md + cut
 
 C:\Python27\python.exe preprocess_md.py
 
-pandoc -o Shapeoko_A_to_Z_v2.pdf concatenated_processed.md
-pandoc -t epub -o Shapeoko_A_to_Z_v2.epub concatenated_processed.md
+# PDF generation now done natively in gitbook using "Export as PDF" 
+#pandoc -o Shapeoko_A_to_Z_v2.pdf concatenated_processed.md
+
+pandoc -t epub -o Shapeoko_A_to_Z_v3.epub -H chapter_break.tex -V geometry:margin=1in concatenated_processed.md
