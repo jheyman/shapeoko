@@ -45,8 +45,19 @@ properties = {
   sequenceNumberIncrement: 1, // increment for sequence numbers
   separateWordsWithSpace: true, // specifies that the words should be separated with a white space
   spindleRampDwell: 0,
-  useTools: false,
-  returnToWorkZero: true
+  useTools: true,
+  returnToWorkZero: true,
+  awesomeProject: true,
+  preloadFirstTool: true
+};
+
+propertyDefinitions = {
+  returnToWorkZero: {title:"Return to Work Zero", description:"If true, machine will retract to height (5mm or 0.2in) below limit and then move to XY zero.", type:"boolean", group:1},
+  useTools: {title:"Output M6 for toolchanges", description:"If true, will output an M6 toolchange command for each tool used.  Using the awesome BitSetter from C3D? Using my sweet CNCjs tool change macros? This should say Yes.", type:"boolean", group:0},
+  useG28: {title:"G28 Safe retracts", description:"Disable to avoid G28 output. Don't enable it unless you know what G28 is, and don't whine about your machine crashing because you enabled this without understanding.", type:"boolean"},
+  spindleRampDwell: {title:"Spindle Ramp Dwell", description:"Specify time in seconds that the machine should dwell after an M3 command. For all the machine owners that added a big spindle.", type:"number", group:2},
+  preloadFirstTool: {title:"PreLoad First Tool", description:"If true, will NOT output an M6 toolchange command for the FIRST tool.  If you don't want your control software to call a toolchange for the first tool, this should say Yes.", type:"boolean", group:1},
+  awesomeProject: {title:"Awesome Project", description:"This parameter simply outputs confirmation that you do awesome work!", type:"boolean", group:3}
 };
 
 var numberOfToolSlots = 9999;
@@ -129,7 +140,13 @@ function onOpen() {
   if (programComment) {
     writeComment(programComment);
   }
-
+  if (properties.awesomeProject){
+	writeComment("This is an AWESOME project...Well Done");
+  }
+  else{
+  writeComment("Not your best work, but that doesn't mean you're not awesome.");
+  }
+	
   // dump machine configuration
   var vendor = machineConfiguration.getVendor();
   var model = machineConfiguration.getModel();
@@ -226,8 +243,8 @@ function forceAny() {
 
 function onSection() {
   var insertToolCall = isFirstSection() ||
-    currentSection.getForceToolChange && currentSection.getForceToolChange() ||
-    (tool.number != getPreviousSection().getTool().number);
+	currentSection.getForceToolChange && currentSection.getForceToolChange() ||
+	(tool.number != getPreviousSection().getTool().number);
   
   var retracted = false; // specifies that the tool has been retracted to the safe plane
   var newWorkOffset = isFirstSection() ||
@@ -268,10 +285,13 @@ function onSection() {
     }
 
     if(properties.useTools) {
-		writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
-		if (tool.comment) {
-			writeComment(tool.comment);
-			}
+		if((properties.preloadFirstTool && !isFirstSection()) || !properties.preloadFirstTool)
+		{
+			writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
+			if (tool.comment) {
+				writeComment(tool.comment);
+				}
+		}
 	}
     var showToolZMin = false;
     if (showToolZMin) {
@@ -371,9 +391,9 @@ function onSection() {
     if (!machineConfiguration.isHeadConfiguration()) {
       writeBlock(
         gAbsIncModal.format(90),
-        gMotionModal.format(0), xOutput.format(initialPosition.x), yOutput.format(initialPosition.y)
+        gMotionModal.format(0), zOutput.format(initialPosition.z)
       );
-      writeBlock(gMotionModal.format(0), zOutput.format(initialPosition.z));
+      writeBlock(gMotionModal.format(0), xOutput.format(initialPosition.x), yOutput.format(initialPosition.y));
     } else {
       writeBlock(
         gAbsIncModal.format(90),
@@ -549,8 +569,11 @@ function onClose() {
   onCommand(COMMAND_COOLANT_OFF);
   
   if(properties.returnToWorkZero) {
+	if(unit == MM)
 	  writeBlock(gAbsIncModal.format(90), gFormat.format(53), gMotionModal.format(0), "Z" + xyzFormat.format(-5));
-	  writeBlock(gAbsIncModal.format(90), gFormat.format(0), gMotionModal.format(0), "X" + xyzFormat.format(0), "Y" + xyzFormat.format(0));
+	else
+	  writeBlock(gAbsIncModal.format(90), gFormat.format(53), gMotionModal.format(0), "Z" + xyzFormat.format(-0.20));	//checking Unit
+	writeBlock(gAbsIncModal.format(90), gFormat.format(0), gMotionModal.format(0), "X" + xyzFormat.format(0), "Y" + xyzFormat.format(0));
   }
   else {
 	  
