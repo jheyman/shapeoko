@@ -31,7 +31,7 @@
     "commander": "^5.0.0-4",
     "inquirer": "^7.3.3",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.18",
+    "lodash": "^4.17.21",
     "node-hid": "^2.1.1",
     "serialport": "^8.0.7",
     "socket.io-client": "^2.3.0"
