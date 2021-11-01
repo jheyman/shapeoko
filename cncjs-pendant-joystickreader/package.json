@@ -1,0 +1,39 @@
+{
+  "name": "cncjs-pendant-joystick",
+  "version": "0.1.0",
+  "description": "Control cncjs with a gaming joystick",
+  "main": "./index.js",
+  "engines": {
+    "node": ">=4"
+  },
+  "bin": {
+    "cncjs-pendant-joystick": "./bin/cncjs-pendant-joystick"
+  },
+  "preferGlobal": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minglecm/cncjs-pendant-joystick.git"
+  },
+  "keywords": [
+    "cncjs",
+    "pendant"
+  ],
+  "author": "Caleb Mingle <caleb@mingle.cm>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/minglecm/cncjs-pendant-joystick/issues"
+  },
+  "homepage": "https://github.com/minglecm/cncjs-pendant-joystick#readme",
+  "dependencies": {
+    "commander": "^5.0.0-4",
+    "inquirer": "^7.3.3",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.18",
+    "node-hid": "^2.1.1",
+    "serialport": "^8.0.7",
+    "socket.io-client": "^2.3.0"
+  }
+}

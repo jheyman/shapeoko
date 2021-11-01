@@ -1,0 +1,455 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var path = require('path');
+var program = require('commander');
+var serialport = require('serialport');
+const Readline = require('@serialport/parser-readline');
+var inquirer = require('inquirer');
+
+var pkg = require('../package.json');
+var serverMain = require('../index');
+
+var options = {};
+
+program
+	.version(pkg.version)
+	.usage('-s <secret> -p <port> [options]')
+	.option('-l, --list', 'list available ports then exit')
+	.option('-j, --joystick <device>', 'joystick')
+    .option('-s, --secret', 'the secret key stored in the ~/.cncrc file')
+	.option('-p, --port <port>', 'path or name of serial port')
+	.option('-b, --baudrate <baudrate>', 'baud rate (default: 115200)', 115200)
+	.option('--socket-address <address>', 'socket address or hostname (default: localhost)', 'localhost')
+	.option('--socket-port <port>', 'socket port (default: 8000)', 8000)
+	.option('--controller-type <type>', 'controller type: Grbl|Smoothie|TinyG (default: Grbl)', 'Grbl')
+    .option('--access-token-lifetime <lifetime>', 'access token lifetime in seconds or a time span string (default: 30d)', '30d')
+
+program.parse(process.argv);
+
+var options = {
+    joystick: program.joystick,
+    secret: program.secret,
+    port: program.port,
+    baudrate: program.baudrate,
+    socketAddress: program.socketAddress,
+    socketPort: program.socketPort,
+    controllerType: program.controllerType,
+    accessTokenLifetime: program.accessTokenLifetime
+};
+
+var Directions = {
+    Center: "CENTER",
+    North: "NORTH",
+    NorthEast: "NORTHEAST",
+    NorthWest: "NORTHWEST",
+    South: "SOUTH",
+    SouthEast: "SOUTHEAST",
+    SouthWest: "SOUTHWEST",
+    East: "EAST",
+    West: "WEST",
+}
+
+var StepButtons = {
+    xLeft: "XLEFT",
+    xRight: "XRIGHT",
+    yUp: "YUP",
+    yDown: "YDOWN",
+    zUp: "ZUP",
+    zDown: "ZDOWN"
+}
+
+if (options.list) {
+	serialport.list().then(function(ports) {
+		ports.forEach(function(port) {
+			console.log(port.path);
+		});
+	}).catch((err) => {
+        console.error(err)
+        process.exit(1)
+    })
+	return;
+}
+
+var store = {
+    controller: {
+        state: {},
+        settings: {}
+    },
+    sender: {
+        status: {}
+    }
+};
+
+function getPayload(controllerData) {
+    let line = controllerData.toString('utf-8').replace(/(\r\n|\n|\r)/gm, "");
+    //console.log("payload="+line);
+    let parts = line.split('|');
+
+    if (parts[0] == "BT") {
+	    return {
+		        cmd_type: parts[0],
+		        button: parts[1],
+		        step: parts[2]
+		    }
+	}
+	else {
+	    return {
+	        cmd_type: parts[0],
+	        direction: parts[1],
+	        // parts[2] contains the angle which is translated into a direction alredy
+	        throw: Number(parts[3]),
+	        z_rotation: Number(parts[4]),
+	        z_enable: parts[5]
+	    }
+	}
+}
+
+var createServer = function(options) {
+    serverMain(options, function(err, socket) {
+        socket.on('Grbl:state', function(state) {
+            store.controller.state = state;
+        });
+
+        socket.on('Grbl:settings', function(settings) {
+            store.controller.settings = settings;
+        });
+
+        socket.on('sender:status', function(data) {
+            store.sender.status = data;
+        });
+
+        console.log('waiting on joystick', options.joystick);
+
+        const port = new serialport(options.joystick, { autoOpen: false })
+
+        port.open(function (err) {
+            if (err) {
+                return console.log('Error opening port: ', err.message)
+            }
+
+            console.log('joystick opened');
+            console.log('waiting on joystick data');
+        })
+
+        var waitingOnOK = false;
+
+        socket.on('serialport:read', function(data) {
+            data = data.trim();
+
+            if(data === 'ok' && waitingOnOK) {
+                //console.log('waitingOnOK=false');
+                waitingOnOK = false;
+            }
+        });
+
+        var writeToCNC = function(data) {
+            //console.log('GCODE', data.replace(/\r\n|\r|\n/gm, ""));
+            socket.emit('write', options.port, data);
+        }
+
+        const SMOOTH_JOG_COMMAND_INTERVAL = 10; // period in ms at which the $J jogging commands are sent to the machine
+        const MIN_SPEED = 1000;
+        const MAX_SPEED = 10000;
+        let xySmoothJogEnabled = false;
+        let zSmoothJogEnabled = false;
+        let currentDirection = null;
+        let currentZRotation = 0;
+        let currentZEnable = 0;
+        let currentThrow = 0;
+        let currentAxis = null;
+
+        function getMovement(joystickThrow) {
+            let speed = 0;
+            let step = 0;
+
+            const windows = [
+                {t: 0.2, speed: 1000, step: 0.5},
+                {t: 0.3, speed: 2000, step: 0.75},
+                {t: 0.4, speed: 2500, step: 1},
+                {t: 0.5, speed: 3500, step: 1.5},
+                {t: 0.6, speed: 4500, step: 1.5},
+                {t: 0.7, speed: 5500, step: 1.5},
+                {t: 0.8, speed: 6500, step: 1.75},
+                {t: 0.9, speed: 7500, step: 2},
+                {t: 1, speed: 8000, step: 2},
+            ];
+
+            for(const window of windows) {
+                if(joystickThrow <= window.t) {
+                    return {
+                        speed: window.speed,
+                        step: window.step,
+                    }
+                }
+            }
+
+            return {
+                speed: 0,
+                step: 0,
+            }
+        }
+
+        function getMovementZ(joystickRotation) {
+            const windows = [
+                {t: 0.2, speed: 300, step: 0.2},
+                {t: 0.5, speed: 500, step: 0.2},
+                {t: 0.7, speed: 700, step: 0.2},
+                {t: 1, speed: 1000, step: 0.5},
+            ];
+
+            for(const window of windows) {
+                if(joystickRotation <= window.t) {
+                    return {
+                        speed: window.speed,
+                        step: window.step,
+                    }
+                }
+            }
+
+            return {
+                speed: 0,
+                step: 0,
+            }
+        }
+
+        setInterval(function() {
+            if(waitingOnOK) {
+                //console.log('skipping jog, waiting on OK');
+                return;
+            }
+
+            if(xySmoothJogEnabled) {
+                // let v = currentSpeed / 60;
+                // let dt = 0.3;
+                // let step = v * dt;
+                // let step = (MAX_SPEED / 60.0) * (SMOOTH_JOG_COMMAND_INTERVAL / 1000.0) * 0.4;
+                // let step = (MAX_SPEED / 60.0) * (SMOOTH_JOG_COMMAND_INTERVAL / 1000.0) * 0.4;
+
+                let movement = getMovement(currentThrow);
+                let currentSpeed = movement.speed;
+                let step = movement.step;
+                var axisString = currentAxis.map(axis => axis + step).join(" ");
+
+                console.log('XY smooth jog command', currentDirection, currentSpeed, currentAxis);
+                writeToCNC(`$J=G91 G21 ${axisString} F${currentSpeed}\n`);
+                waitingOnOK = true;
+
+                return;
+            }
+
+            if(zSmoothJogEnabled) {
+                let currentSpeed = 300;
+                let step = 1;
+
+                var movement = getMovementZ(Math.abs(currentZRotation));
+
+                currentSpeed = movement.speed;
+                step = movement.step;
+
+                if(currentZRotation < 0) {
+                    step = -step;
+                }
+
+                console.log('Z smooth jog command', currentDirection, currentSpeed, currentAxis);
+                writeToCNC(`$J=G91 G21 Z${step} F${currentSpeed}\n`);
+                waitingOnOK = true;
+
+                return;
+            }
+        }, SMOOTH_JOG_COMMAND_INTERVAL);
+
+        const parser = port.pipe(new Readline({ delimiter: '\n' }));
+
+        parser.on("data", function(data) {
+            var payload = getPayload(data);
+            if(payload.direction === '') {
+                return;
+            }
+
+            if (payload.cmd_type == "JD") {
+
+            currentDirection = payload.direction;
+            currentZRotation = payload.z_rotation;
+            currentZEnable = payload.z_enable;
+            currentThrow = payload.throw;
+
+            const ROTATION_THRESHOLD = 0.08
+
+            if(Math.abs(currentZRotation) >= ROTATION_THRESHOLD) {
+                if (zSmoothJogEnabled == false && currentZEnable == 1) {
+                	zSmoothJogEnabled = true;
+					currentAxis = ["Z"];
+				}
+                return;
+            } else if(zSmoothJogEnabled) {
+                let stop = function() {
+                    console.log("smooth jogging stopped")
+                    zSmoothJogEnabled = false;
+                    writeToCNC("\x85");
+                }
+
+                if(!waitingOnOK) {
+                    stop()
+                } else {
+                    let interval = null;
+
+                    interval = setInterval(function() {
+                        if(waitingOnOK) {
+                            return;
+                        }
+
+                        clearInterval(interval)
+                        stop()
+                    }, 10)
+                }
+
+                return;
+            }
+
+            var stopSmoothJogging = function() {
+                if(!xySmoothJogEnabled) {
+                    return;
+                }
+
+                let stop = function() {
+                    console.log("smooth jogging stopped")
+                    xySmoothJogEnabled = false;
+                    writeToCNC("\x85");
+                }
+
+                if(!waitingOnOK) {
+                    stop()
+                } else {
+                    let interval = null;
+
+                    interval = setInterval(function() {
+                        if(waitingOnOK) {
+                            return;
+                        }
+
+                        clearInterval(interval)
+                        stop()
+                    }, 10)
+                }
+            }
+
+            var startSmoothJogging = function(...selectedAxis) {
+                 currentAxis = selectedAxis;
+                if (xySmoothJogEnabled == false && currentZEnable == 1) {
+                	xySmoothJogEnabled = true;
+                }
+            }
+
+            switch (currentDirection) {
+                case Directions.Center:
+                    stopSmoothJogging();
+                    break;
+
+                case Directions.North:
+                    startSmoothJogging("Y");
+                    break;
+
+                case Directions.South:
+                    startSmoothJogging("Y-")
+                    break;
+
+                case Directions.East:
+                    startSmoothJogging("X")
+                    break;
+
+                case Directions.West:
+                    startSmoothJogging("X-")
+                    break;
+
+                case Directions.NorthEast:
+                    startSmoothJogging("X", "Y")
+                    break;
+
+                case Directions.NorthWest:
+                    startSmoothJogging("X-", "Y")
+                    break;
+
+                case Directions.SouthEast:
+                    startSmoothJogging("X", "Y-")
+                    break;
+
+                case Directions.SouthWest:
+                    startSmoothJogging("X-", "Y-")
+                    break;
+
+                default:
+                    break;
+            }
+         } else if (payload.cmd_type=="BT") {
+
+            switch (payload.button) {
+                case StepButtons.xLeft:
+                    console.log('step X-', payload.step);
+                	writeToCNC(`G91 G21 G0 X-${payload.step}\n`);
+                	waitingOnOK = true;
+                    break;
+
+                case StepButtons.xRight:
+                    console.log('step X+', payload.step);
+                	writeToCNC(`G91 G21 G0 X${payload.step}\n`);
+                	waitingOnOK = true;
+                    break;
+
+                case StepButtons.yUp:
+                    console.log('step Y-', payload.step);
+                	writeToCNC(`G91 G21 G0 Y${payload.step}\n`);
+                	waitingOnOK = true;
+                    break;
+
+                case StepButtons.yDown:
+                    console.log('step Y+', payload.step);
+                	writeToCNC(`G91 G21 G0 Y-${payload.step}\n`);
+                	waitingOnOK = true;
+                    break;
+
+                case StepButtons.zUp:
+                    console.log('step Z+', payload.step);
+                	writeToCNC(`G91 G21 G0 Z${payload.step}\n`);
+                	waitingOnOK = true;
+                    break;
+
+                case StepButtons.zDown:
+                    console.log('step Z-', payload.step);
+                	writeToCNC(`G91 G21 G0 Z-${payload.step}\n`);
+                	waitingOnOK = true;
+                    break;
+
+                default:
+                    break;
+            }
+         } 
+            
+        });
+    });
+};
+
+if (options.port) {
+    createServer(options);
+    return;
+}
+
+serialport.list().then(function (ports) {
+    const choices = ports.map(function(port) {
+        return port.path;
+    });
+
+    inquirer.prompt([{
+        type: 'list',
+        name: 'port',
+        message: 'Specify which port you want to use?',
+        choices: choices
+    }]).then(function(answers) {
+        options.port = answers.port;
+
+        createServer(options);
+    });
+}).catch((err) => {
+    console.error(err)
+    process.exit(1)
+})
